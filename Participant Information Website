@@ -360,10 +360,11 @@
     }
 
     .nav {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 1.7rem;
-      gap: 0.6rem;
+  display: flex;
+  justify-content: flex-end;  /* keep buttons aligned to the right */
+  align-items: center;
+  margin-top: 1.7rem;
+  gap: 0.6rem;                /* space between Back and Next */
     }
 
     .heart-button {
