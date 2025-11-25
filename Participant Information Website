@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pinch Grip Experiment Instructions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ---------- Base layout ---------- */
+    body {
+      font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;          /* top-align for long content */
+      padding: 2rem;
+      background: linear-gradient(180deg, #ffe6f4, #ffdff0 45%, #fff7fb);
+      position: relative;
+      overflow-x: hidden;               /* allow vertical scroll on mobile */
+      overflow-y: auto;
+    }
+
+    /* ---------- Fluffy cloud background ---------- */
+    .cloud {
+      position: absolute;
+      background: #ffffffaa;
+      border-radius: 999px;
+      filter: blur(2px);
+      box-shadow:
+        30px 10px 40px #ffffffbb,
+        -20px 5px 30px #ffffffbb;
+      animation: floatCloud 18s linear infinite;
+      pointer-events: none;
+    }
+
+    .cloud.cloud-1 { width: 220px; height: 80px; top: 8%; left: 5%; animation-delay: 0s; }
+    .cloud.cloud-2 { width: 260px; height: 90px; top: 18%; right: -10%; animation-delay: 4s; }
+    .cloud.cloud-3 { width: 180px; height: 70px; bottom: 10%; left: -15%; animation-delay: 8s; }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(0); opacity: 0.75; }
+      50% { opacity: 1; }
+      100% { transform: translateX(40vw); opacity: 0.75; }
+    }
+
+    /* ---------- Sparkles ---------- */
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #fff 0, #ffe2f5 40%, transparent 70%);
+      border-radius: 50%;
+      animation: twinkle 2.2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .sparkle.s1 { top: 12%; left: 40%; animation-delay: 0.1s; }
+    .sparkle.s2 { top: 30%; right: 15%; animation-delay: 0.5s; }
+    .sparkle.s3 { bottom: 20%; left: 25%; animation-delay: 0.9s; }
+    .sparkle.s4 { bottom: 8%; right: 35%; animation-delay: 1.3s; }
+
+    @keyframes twinkle {
+      0% { transform: scale(0.7); opacity: 0.4; }
+      100% { transform: scale(1.2); opacity: 1; }
+    }
+
+    /* ---------- Main card ---------- */
+    .page-wrapper {
+      width: 100%;
+      max-width: 820px;
+      background: #ffffffee;
+      backdrop-filter: blur(10px);
+      padding: 2.3rem 2.6rem 2rem;
+      border-radius: 26px;
+      border: 2px solid #ffb6dd;
+      box-shadow: 0 14px 35px rgba(255, 105, 180, 0.27);
+      position: relative;
+      z-index: 2;
+      animation: floatIn 0.6s ease-out;
+      box-sizing: border-box;
+      margin-bottom: 2rem;
+    }
+
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.7rem;
+      color: #e6459b;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #a34e88;
+      margin-bottom: 0.8rem;
+    }
+
+    /* ---------- Mascot (new, more visually interesting bunny) ---------- */
+    .mascot {
+      flex-shrink: 0;
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #ffe5f2 35%, #ffc1de 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 16px rgba(255, 155, 204, 0.55);
+      position: relative;
+      overflow: visible;
+      animation: mascotFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
+    }
+
+    .mascot-inner {
+      position: relative;
+      width: 72px;
+      height: 72px;
+    }
+
+    .mascot-ear {
+      position: absolute;
+      width: 22px;
+      height: 48px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffe7f5, #ffc5e3);
+      top: -26px;
+      box-shadow: 0 4px 8px rgba(255, 165, 211, 0.55);
+    }
+
+    .mascot-ear::after {
+      content: "";
+      position: absolute;
+      inset: 5px 6px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffbada, #ff9fcd);
+      opacity: 0.9;
+    }
+
+    .mascot-ear.left {
+      left: 6px;
+      transform: rotate(-12deg);
+    }
+
+    .mascot-ear.right {
+      right: 6px;
+      transform: rotate(12deg);
+    }
+
+    .mascot-face {
+      position: absolute;
+      inset: 6px;
+      border-radius: 26px;
+      background: radial-gradient(circle at 30% 25%, #fff 0, #ffe8f6 55%, #ffd2ea 100%);
+      box-shadow: 0 4px 8px rgba(255, 164, 210, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .mascot-eyes {
+      display: flex;
+      justify-content: space-between;
+      width: 60%;
+      margin-bottom: 2px;
+    }
+
+    .mascot-eye {
+      width: 9px;
+      height: 11px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #222 55%, #000 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mascot-eye::after {
+      content: "";
+      position: absolute;
+      top: 1px;
+      left: 2px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .mascot-nose {
+      width: 10px;
+      height: 8px;
+      background: #ff8ab9;
+      border-radius: 6px 6px 10px 10px;
+      margin-bottom: 2px;
+    }
+
+    .mascot-mouth {
+      width: 18px;
+      height: 10px;
+      border-bottom: 2px solid #b0437d;
+      border-radius: 0 0 18px 18px;
+      margin-top: -2px;
+    }
+
+    .mascot-blush {
+      position: absolute;
+      bottom: 16px;
+      width: 56%;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .mascot-blush-dot {
+      width: 10px;
+      height: 6px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(255, 153, 196, 0.7) 0, transparent 70%);
+      opacity: 0.9;
+    }
+
+    .mascot-badge {
+      position: absolute;
+      bottom: -6px;
+      right: 8px;
+      background: #ff8ec7;
+      color: #fff;
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(255, 105, 180, 0.5);
+      font-weight: 700;
+    }
+
+    .mascot-speech {
+      font-size: 0.92rem;
+      background: #fff7fd;
+      border-radius: 16px;
+      border: 1px solid #ffd1ec;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.2rem;
+      color: #7b3b70;
+      display: inline-block;
+      position: relative;
+    }
+
+    .mascot-speech::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      bottom: -8px;
+      border-width: 8px 8px 0 8px;
+      border-style: solid;
+      border-color: #ffd1ec transparent transparent transparent;
+    }
+
+    /* ---------- Content styling ---------- */
+    #page-content p {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: #000000;
+      margin: 0.85rem 0;
+    }
+
+    #page-content ul {
+      padding-left: 1.2rem;
+      margin: 0.7rem 0 0.3rem;
+    }
+
+    #page-content li {
+      margin: 0.35rem 0;
+      line-height: 1.6;
+      font-size: 1.0rem;
+    }
+
+    .phase-list li::marker {
+      content: "🌸 ";
+    }
+
+    .tip-box {
+      background: #fff5fb;
+      border-radius: 14px;
+      border: 1px dashed #ff9fcb;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.93rem;
+      margin-top: 0.7rem;
+      color: #7a3268;
+    }
+
+    .highlight {
+      font-weight: 700;
+      color: #d83786;
+    }
+
+    .label-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: #ffe4f4;
+      border: 1px solid #ffbcdc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #b33476;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .label-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: #ff7ebc;
+    }
+
+    /* ---------- Progress + nav ---------- */
+    #progress-section {
+      margin-top: 1.3rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #ffd7ec;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid #ffb3dd;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff8ec7, #ff63b0, #ff9dd7);
+      transition: width 0.25s ease-out;
+    }
+
+    .page-indicator {
+      text-align: center;
+      color: #d25397;
+      margin-top: 0.45rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.7rem;
+      gap: 0.6rem;
+    }
+
+    .heart-button {
+      border: none;
+      padding: 0.8rem 1.7rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.98rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: white;
+      box-shadow: 0 5px 12px rgba(255, 105, 180, 0.45);
+      position: relative;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    .heart-button::before {
+      content: "❤";
+      margin-right: 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .heart-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 16px rgba(255, 105, 180, 0.6);
+      filter: brightness(1.05);
+    }
+
+    .heart-button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(255, 105, 180, 0.4);
+    }
+
+    .heart-button:disabled {
+      background: linear-gradient(135deg, #f7c8e1, #f3b4d8);
+      cursor: default;
+      box-shadow: none;
+      filter: grayscale(0.1);
+    }
+
+    .heart-button.secondary {
+      background: linear-gradient(135deg, #ffdbe9, #ffc3df);
+      color: #b13675;
+      box-shadow: 0 3px 8px rgba(255, 182, 216, 0.7);
+    }
+
+    .heart-button.secondary::before {
+      content: "⟵";
+      font-size: 1rem;
+    }
+
+    .heart-button.primary::before {
+      content: "⟶";
+      font-size: 1rem;
+      margin-right: 0.3rem;
+    }
+
+    .heart-button.primary.done::before {
+      content: "✔";
+    }
+
+    /* ---------- Diagram styling for “What You’ll Do” ---------- */
+    .diagram-wrapper {
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px dashed #ffbcd7;
+    }
+
+    .diagram-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #c43780;
+      margin-bottom: 0.5rem;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .step-card {
+      background: #fff8fd;
+      border-radius: 14px;
+      border: 1px solid #ffd0ec;
+      padding: 0.6rem 0.7rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.9rem;
+    }
+
+    .step-circle {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #ffe0f3 40%, #ffb5dd 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #b02f73;
+      box-shadow: 0 2px 5px rgba(255, 143, 202, 0.55);
+      font-size: 0.9rem;
+    }
+
+    .step-text {
+      line-height: 1.4;
+    }
+
+    .step-label {
+      font-weight: 700;
+      color: #aa2f6c;
+      display: block;
+    }
+
+    .step-sub {
+      font-size: 0.83rem;
+      color: #7a3268;
+    }
+
+    /* ---------- FAQ screen styling ---------- */
+    .faq-wrapper {
+      margin-top: 0.4rem;
+    }
+
+    .faq-intro {
+      font-size: 0.96rem;
+      color: #7b3b70;
+      margin-bottom: 0.9rem;
+    }
+
+    .faq-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 1rem;
+    }
+
+    .faq-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .faq-button {
+      border-radius: 999px;
+      border: 1px solid #ffb9dd;
+      background: #fff6fc;
+      padding: 0.45rem 0.85rem;
+      text-align: left;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: #983067;
+      transition: background 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease;
+    }
+
+    .faq-button span.emoji {
+      font-size: 1.1rem;
+    }
+
+    .faq-button:hover {
+      background: #ffe6f5;
+      box-shadow: 0 3px 8px rgba(255, 140, 201, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .faq-button.active {
+      background: linear-gradient(135deg, #ffb4dc, #ff8ac6);
+      color: #5e1342;
+      box-shadow: 0 4px 10px rgba(255, 104, 181, 0.5);
+      font-weight: 700;
+    }
+
+    .faq-answer {
+      background: #fff8fd;
+      border-radius: 18px;
+      border: 1px solid #ffd2ec;
+      padding: 0.9rem 1rem;
+      font-size: 0.94rem;
+      color: #6c2b5a;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .faq-answer-title {
+      font-weight: 700;
+      color: #c43880;
+      margin-bottom: 0.1rem;
+    }
+
+    .faq-email-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9ace, #ff6ab6);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 0.4rem;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.5);
+    }
+
+    .faq-email-btn::before {
+      content: "✉";
+      font-size: 1rem;
+    }
+
+    .faq-note {
+      font-size: 0.82rem;
+      color: #8a3b6f;
+      margin-top: 0.3rem;
+    }
+
+    .faq-tagline {
+      font-size: 0.82rem;
+      color: #a24e84;
+      margin-top: 0.2rem;
+      font-style: italic;
+    }
+
+    /* ---------- Small screen tweaks ---------- */
+    @media (max-width: 640px) {
+      body {
+        padding: 1.2rem;
+        align-items: flex-start;
+      }
+      .page-wrapper {
+        padding: 1.6rem 1.4rem 1.4rem;
+      }
+      .header-row {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+      }
+      .mascot {
+        align-self: center;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+      .nav {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+      .heart-button {
+        max-width: none;
+      }
+      .faq-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- clouds & sparkles in the background -->
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="sparkle s1"></div>
+  <div class="sparkle s2"></div>
+  <div class="sparkle s3"></div>
+  <div class="sparkle s4"></div>
+
+  <div class="page-wrapper">
+    <div class="header-row">
+      <div>
+        <h1 id="page-title">Welcome</h1>
+        <div class="subtitle" id="page-subtitle">Let’s get ready for the pinch grip task 🌸</div>
+      </div>
+
+      <div class="mascot">
+        <div class="mascot-inner">
+          <div class="mascot-ear left"></div>
+          <div class="mascot-ear right"></div>
+          <div class="mascot-face">
+            <div class="mascot-eyes">
+              <span class="mascot-eye"></span>
+              <span class="mascot-eye"></span>
+            </div>
+            <div class="mascot-nose"></div>
+            <div class="mascot-mouth"></div>
+            <div class="mascot-blush">
+              <span class="mascot-blush-dot"></span>
+              <span class="mascot-blush-dot"></span>
+            </div>
+          </div>
+        </div>
+        <div class="mascot-badge" id="mascot-badge">Info Sheet</div>
+      </div>
+    </div>
+
+    <div class="mascot-speech" id="mascot-speech"></div>
+
+    <div id="page-content"></div>
+
+    <div id="progress-section">
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <div id="page-indicator" class="page-indicator"></div>
+    </div>
+
+    <div class="nav" id="nav">
+      <button id="back-btn" class="heart-button secondary">Back</button>
+      <button id="next-btn" class="heart-button primary">Next</button>
+    </div>
+  </div>
+
+  <script>
+    /* ---- Pages: based on your experiment description + new “researchers” page ---- */
+    const pages = [
+      {
+        title: "Welcome ✨",
+        subtitle: "Participant Information Sheet",
+        speech: "Thank you for your interest in taking part! I’ll explain everything step by step so you know exactly what to do 🌸",
+        html: `
+          <p>In this experiment, we’re interested in how you control <span class="highlight">precision pinch grip</span>
+          with your thumb and index finger.</p>
+
+          <p>You’ll hold a small device between your fingers, lift it to different heights, and keep it steady while we
+          quietly record how your hands respond to changes in the device's weight.</p>
+
+          <p>There are no “right” or “wrong” answers here — we’re just interested in how <em>your</em> hands naturally respond 💖</p>
+
+          <div class="tip-box">
+            🌼 <strong>Take your time reading.</strong> You can always ask the researcher if something doesn’t make sense.
+          </div>
+        `
+      },
+      {
+        title: "Who is running this study? 🧑‍🔬",
+        subtitle: "Meet the research team",
+        speech: "A small research team will be with you throughout the session. Here’s who they are and how they can help 🌷",
+        html: `
+          <p>This study is being carried out by a small research team at the University of Birmingham.</p>
+
+          <ul>
+            <li><strong>Primary contact:</strong> Leaf.</li>
+            <li><strong>Supporting researchers:</strong> Clark.</li>
+            <li><strong>Supervision:</strong> Max and Diar</li>
+          </ul>
+
+          <p>If you have questions later about your participation or your data, you can email:</p>
+          <ul>
+            <li><strong>axc103@student.bham.ac.uk</strong> (primary email)</li>
+            <li>Max and Diar (secondary email)</li>
+          </ul>
+
+          <div class="tip-box">
+            🐰 You never have to handle anything alone — if something feels unclear or worrying at any time, you can always ask the researcher in the room or contact us by email.
+          </div>
+        `
+      },
+      {
+        title: "Meet the Device 🎀",
+        subtitle: "The tiny pinch-grip measuring tool you’ll be holding",
+        speech: "This device is more sensitive than it looks! It can feel how hard you pinch and how much you move 💫",
+        html: `
+          <p>You’ll be using a <span class="highlight">small device pinched between your thumb and index finger</span>.
+          Inside it, there are sensors that can feel
+          both <strong>force</strong> and <strong>torque</strong>:</p>
+
+          <ul>
+            <li><strong>Force</strong> = how hard you grip or pinch the device 💪</li>
+            <li><strong>Torque</strong> = how steady your hold is ↻</li>
+          </ul>
+
+          <p>When you pinch and hold the device, the tiny metal piece inside bends ever so slightly.
+          As it bends, its electrical resistance changes, and our sensors measure that change.</p>
+
+          <p>Later on, the computer turns those measurements into numbers so we can look at things like:</p>
+
+          <ul>
+            <li><strong>Average grip force</strong> (your overall squeeze)</li>
+            <li><strong>Peak force</strong> (the strongest squeeze you used)</li>
+            <li><strong>Reaction Time</strong> (how quickly you automatically responded)</li>
+            <li><strong>Movement Time</strong> (how quickly you tightened your pinch)</li>
+          </ul>
+
+          <div class="tip-box">
+            🧠 You don’t need to remember any of this — just hold and move the device as instructed. We’ll handle the rest!
+          </div>
+        `
+      },
+      {
+        title: "What You’ll Do 🌟",
+        subtitle: "The basic pinch and lift sequence",
+        speech: "Here’s the little routine you’ll repeat. I’ll break it down into tiny steps so it’s super clear!",
+        html: `
+          <p>Each trial is a <span class="highlight">pinch-and-hold-up activity (PHUA)</span>.
+          You’ll repeat the same basic sequence with the device:</p>
+
+          <div class="diagram-wrapper">
+            <div class="diagram-title">A simple picture of each step:</div>
+            <div class="diagram-grid">
+              <div class="step-card">
+                <div class="step-circle">1</div>
+                <div class="step-text">
+                  <span class="step-label">Reach</span>
+                  <span class="step-sub">Move your hand toward the device on the table.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">2</div>
+                <div class="step-text">
+                  <span class="step-label">Grip</span>
+                  <span class="step-sub">Pinch gently with your thumb and index finger.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">3</div>
+                <div class="step-text">
+                  <span class="step-label">Lift to 5 cm</span>
+                  <span class="step-sub">Raise the device to the first height marker.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">4</div>
+                <div class="step-text">
+                  <span class="step-label">Hold (5 cm)</span>
+                  <span class="step-sub">Keep it steady here for about 5 seconds.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">5</div>
+                <div class="step-text">
+                  <span class="step-label">Lift to 30 cm</span>
+                  <span class="step-sub">Raise the device up to the higher marker.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">6</div>
+                <div class="step-text">
+                  <span class="step-label">Hold (30 cm)</span>
+                  <span class="step-sub">Keep it steady again for about 5 seconds.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">7</div>
+                <div class="step-text">
+                  <span class="step-label">Lower</span>
+                  <span class="step-sub">Gently bring the device back down to 5 cm.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">8</div>
+                <div class="step-text">
+                  <span class="step-label">Hold again</span>
+                  <span class="step-sub">Hold steady at 5 cm one more time.</span>
+                </div>
+              </div>
+              <div class="step-card">
+                <div class="step-circle">9</div>
+                <div class="step-text">
+                  <span class="step-label">Replace</span>
+                  <span class="step-sub">Gently place the device back on the table.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tip-box">
+            🌸 Try to keep your movements <strong>steady</strong> and <strong>controlled</strong>, without rushing.<br/>
+            We’re looking at how your grip changes over time, not how fast you can finish.
+          </div>
+        `
+      },
+      {
+        title: "The Surprise “Catch” Phase 🎣",
+        subtitle: "When a weight in the device suddenly drops",
+        speech: "Sometimes the device drops a weight inside, but all you need to do is grip tighter when this happens so the device doesn't fall out of your fingers! 🐰",
+        html: `
+          <p>In some of the trials, there will be a <span class="highlight">“catch” phase</span>.</p>
+
+          <p>During these special trials, the device experiences a sudden extra <strong>downward, pulling force</strong>.</p>
+
+          <p><strong>Your job:</strong> When you feel this happen, simply <strong>tighten your grip a bit</strong> so the device
+          doesn’t slip from your fingers.</p>
+
+          <div class="tip-box">
+            💡 There’s no need to “react perfectly” — we’re interested in your natural response:
+            how your grip <strong>hesitates, anticipates, or adjusts</strong> when the weight changes.
+          </div>
+        `
+      },
+      {
+        title: "Different Conditions 🍓",
+        subtitle: "Dominant, Non-dominant & Vision Blocked",
+        speech: "We’ll repeat the task in a few different ways to see how your grip changes across conditions 🎀",
+        html: `
+          <p>You’ll do the pinch-and-hold task under several conditions:</p>
+
+          <p>
+            <span class="label-chip">
+              <span class="label-dot"></span> Dominant hand
+            </span>
+            <span class="label-chip">
+              <span class="label-dot"></span> Non-dominant hand
+            </span>
+            <span class="label-chip">
+              <span class="label-dot"></span> Vision Blocked
+            </span>
+          </p>
+
+          <ul>
+            <li><strong>Dominant hand:</strong> The hand you normally use for writing or most tasks.</li>
+            <li><strong>Non-dominant hand:</strong> The opposite hand doing the same lift-and-hold sequence.</li>
+            <li><strong>Vision Blocked :</strong> Your vision of the device is blocked by holding your arm through a curtain.</li>
+          </ul>
+
+          <p>In the vision blocked condition, you’ll still know how high to lift the device:</p>
+
+          <ul>
+            <li>There will be <strong>little feather markers</strong> indicating the different heights.</li>
+            <li>You’ll lift until the device reaches each feather level, then hold it there.</li>
+          </ul>
+
+          <div class="tip-box">
+            🕊️ Just listen to the instructions and aim for the feather markers — you don’t have to be perfect.
+          </div>
+        `
+      },
+      {
+        title: "Before We Start 🧼",
+        subtitle: "Wash, dry, get in position",
+        speech: "Almost ready! Just a few little prep steps so the measurements are as clean as possible 💖",
+        html: `
+          <p>Before the actual task begins, there are a few steps:</p>
+
+          <ul>
+            <li>You’ll complete a <strong>questionnaire</strong>.</li>
+            <li>You’ll then be scheduled for the experiment session.</li>
+            <li>When you arrive, you’ll be asked to <strong>wash your hands with a natural soap</strong>
+              to remove grease (some soaps like Dove can leave a residue).</li>
+            <li>You’ll dry your hands with the <strong>kitchen roll provided</strong>.</li>
+            <li>You’ll then sit with one hand hovering over the table in a cubicle, facing the device.</li>
+            <li>Your other hand will rest in your lap.</li>
+            <li>You don’t need to “perform” in a special way — your normal, natural behaviour is exactly what we want.</li>
+          </ul>
+
+          <p>The researcher will sit on the other side of the table to guide you, answer questions, and run the trials.</p>
+
+          <div class="tip-box">
+            🌼 If at any point your hands feel uncomfortable or tired, please tell the researcher —
+            we can pause or adjust as needed.
+          </div>
+        `
+      },
+      {
+        title: "During & After the Experiment 💫",
+        subtitle: "What we’re measuring (without overloading you) & What happens after:",
+        speech: "While you focus on the task, we quietly record how your grip changes over time. You don’t have to think about the data at all 🐰",
+        html: `
+          <p>In between conditions, the participant will <span class="highlight">take a few minute breaks</span>.</p>
+          <p>Inside the device are <strong>force–torque sensors</strong> that measure how much you:</p>
+          <ul>
+            <li><strong>Press</strong> on the device (grip force)</li>
+            <li><strong>Holding</strong> the device steady (torque)</li>
+          </ul>
+          <p>Afterwards, your data is anonymously analysed and stored for up to 5 years. <span class="highlight">If at any point, you'd like your data to be deleted</span>; email axc103@student.bham.ac.uk, Max's email, or Diar's email.</p>
+        `
+      },
+      {
+        title: "Ready to Begin 💕",
+        subtitle: "Last checks before we start",
+        speech: "You made it through all the instructions! Let’s check you’re comfortable and ready to go ✨",
+        html: `
+          <p>That’s everything you need to know for now 🌸</p>
+
+          <p>Before the first trial starts, please make sure:</p>
+
+          <ul>
+            <li>You’re sitting comfortably with both feet supported.</li>
+            <li>Your hands are clean and dry.</li>
+            <li>You can easily reach the device without stretching.</li>
+            <li>You feel okay to continue (no pain, dizziness, or discomfort).</li>
+          </ul>
+
+          <p>If you have <strong>any questions at all</strong>, now is a great time to ask the researcher.</p>
+
+          <div class="tip-box">
+            🐰 When you’re ready, let the researcher know. They’ll start with a couple of practice trials,
+            so you can get used to the device before the main experiment begins 💫
+          </div>
+        `
+      }
+    ];
+
+    const faqData = {
+      "what-happens-next": {
+        title: "What happens after I finish the task?",
+        body: `
+          <p>Once you’ve finished all the trials, the researcher will:</p>
+          <ul>
+            <li>Check that you’re feeling okay and answer any last questions.</li>
+            <li>Save your data using a participant ID (not your name).</li>
+            <li>Explain anything you’d like to know more about.</li>
+          </ul>
+          <p>You can also decide at any point later that you’d like your data to be deleted.</p>
+        `
+      },
+      "can-i-take-breaks": {
+        title: "Can I take a break or stop?",
+        body: `
+          <p>Yes, absolutely.</p>
+          <ul>
+            <li>You can ask for a break at any time during the session.</li>
+            <li>If your hand feels tired, uncomfortable, or you feel unwell, just tell the researcher.</li>
+            <li>You can stop taking part altogether at any time, without giving a reason.</li>
+          </ul>
+        `
+      },
+      "is-this-safe": {
+        title: "Is the task safe and okay for my hands?",
+        body: `
+          <p>The task uses gentle pinch movements that most people do in daily life (like picking up small objects).</p>
+          <ul>
+            <li>The researcher will check that you’re comfortable before starting.</li>
+            <li>If anything feels painful or worrying, you should say so straight away.</li>
+            <li>We can pause, change position, or end the session if needed.</li>
+          </ul>
+        `
+      },
+      "what-about-my-data": {
+        title: "What happens to my data?",
+        body: `
+          <p>Your data is stored under a participant ID, not your name.</p>
+          <ul>
+            <li>It may be analysed and used for research reports or publications.</li>
+            <li>Only the research team will have access to the raw data.</li>
+            <li>Your data can be stored for up to 5 years.</li>
+          </ul>
+          <p>If you later decide you want your data deleted, you can email the research team and give your participant ID if you have it.</p>
+        `
+      },
+      "need-more-help": {
+        title: "Need more help or want to contact someone?",
+        body: `
+          <p>If you still have questions or worries, you can contact the research team by email.</p>
+          <p>
+            <a class="faq-email-btn" href="mailto:axc103@student.bham.ac.uk?subject=Question%20about%20pinch%20grip%20study">
+              Email the research team
+            </a>
+          </p>
+          <p class="faq-note">
+            You may also be given additional email addresses (for example, Max or Diar) on your information sheet —
+            you can use those as well if you prefer.
+          </p>
+          <p class="faq-tagline">
+            💌 It’s always okay to ask questions — before, during, or after the experiment.
+          </p>
+        `
+      }
+    };
+
+    let currentPageIndex = 0;
+    let inFaqMode = false;
+
+    const pageTitleEl = document.getElementById("page-title");
+    const pageSubtitleEl = document.getElementById("page-subtitle");
+    const mascotSpeechEl = document.getElementById("mascot-speech");
+    const pageContentEl = document.getElementById("page-content");
+    const backBtn = document.getElementById("back-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const pageIndicatorEl = document.getElementById("page-indicator");
+    const progressFillEl = document.getElementById("progress-fill");
+    const progressSectionEl = document.getElementById("progress-section");
+    const navEl = document.getElementById("nav");
+    const mascotBadgeEl = document.getElementById("mascot-badge");
+
+    function isMobile() {
+      return window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
+    }
+
+    function scrollToTopIfMobile() {
+      if (isMobile()) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+
+    function renderPage(index) {
+      const page = pages[index];
+      if (!page) return;
+      inFaqMode = false;
+
+      pageTitleEl.textContent = page.title;
+      pageSubtitleEl.textContent = page.subtitle || "";
+      mascotSpeechEl.innerHTML = page.speech || "";
+      pageContentEl.innerHTML = page.html;
+
+      // Hide the back button completely on the first page
+      if (index === 0) {
+        backBtn.style.display = "none";
+      } else {
+        backBtn.style.display = "inline-block";
+      }
+
+      // Last page = change Next button text
+      if (index === pages.length - 1) {
+        nextBtn.textContent = "All done!";
+        nextBtn.classList.add("done");
+        nextBtn.classList.add("primary");
+      } else {
+        nextBtn.textContent = "Next";
+        nextBtn.classList.remove("done");
+      }
+
+      navEl.style.display = "flex";
+      progressSectionEl.style.display = "block";
+      mascotBadgeEl.textContent = "Info Sheet";
+
+      pageIndicatorEl.textContent = `Page ${index + 1} of ${pages.length}`;
+      const progress = ((index + 1) / pages.length) * 100;
+      progressFillEl.style.width = progress + "%";
+    }
+
+    function enterFaqMode() {
+      inFaqMode = true;
+
+      pageTitleEl.textContent = "All done! 🎉";
+      pageSubtitleEl.textContent = "Chat with your little experiment helper";
+      mascotSpeechEl.innerHTML = "Great job making it through all the instructions! Tap a question below and I’ll help explain things 🐰";
+
+      mascotBadgeEl.textContent = "Help & FAQ";
+
+      progressSectionEl.style.display = "none";
+      navEl.style.display = "none";
+
+      pageContentEl.innerHTML = `
+        <div class="faq-wrapper">
+          <p class="faq-intro">
+            This page is just for you to double-check anything you’re still curious about. You can’t “do it wrong” here —
+            it’s simply a friendly FAQ.
+          </p>
+          <div class="faq-layout">
+            <div class="faq-buttons">
+              <button class="faq-button" data-faq-key="what-happens-next">
+                <span class="emoji">➡️</span>
+                <span>What happens after I finish?</span>
+              </button>
+              <button class="faq-button" data-faq-key="can-i-take-breaks">
+                <span class="emoji">⏸️</span>
+                <span>Can I take breaks or stop?</span>
+              </button>
+              <button class="faq-button" data-faq-key="is-this-safe">
+                <span class="emoji">🖐️</span>
+                <span>Is this safe for my hands?</span>
+              </button>
+              <button class="faq-button" data-faq-key="what-about-my-data">
+                <span class="emoji">🔐</span>
+                <span>What happens to my data?</span>
+              </button>
+              <button class="faq-button" data-faq-key="need-more-help">
+                <span class="emoji">💌</span>
+                <span>Need more help?</span>
+              </button>
+            </div>
+            <div class="faq-answer" id="faq-answer">
+              <div class="faq-answer-title">Tap a question on the left to see the answer ✨</div>
+              <p>If anything still doesn’t make sense, it’s always okay to ask the researcher in the room.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Wire up FAQ buttons
+      const faqButtons = pageContentEl.querySelectorAll(".faq-button");
+      const answerEl = document.getElementById("faq-answer");
+
+      function showFaq(key, button) {
+        const data = faqData[key];
+        if (!data) return;
+        faqButtons.forEach(btn => btn.classList.remove("active"));
+        if (button) button.classList.add("active");
+        answerEl.innerHTML = `
+          <div class="faq-answer-title">${data.title}</div>
+          ${data.body}
+        `;
+      }
+
+      faqButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-faq-key");
+          showFaq(key, btn);
+        });
+      });
+
+      // Pre-select first question
+      if (faqButtons[0]) {
+        showFaq(faqButtons[0].getAttribute("data-faq-key"), faqButtons[0]);
+      }
+
+      // Scroll to top for mobile when entering FAQ
+      scrollToTopIfMobile();
+    }
+
+    backBtn.addEventListener("click", () => {
+      if (inFaqMode) {
+        return;
+      }
+      if (currentPageIndex > 0) {
+        currentPageIndex--;
+        renderPage(currentPageIndex);
+        // (Spec is only for Next button, so no scroll here)
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (inFaqMode) {
+        return;
+      }
+      if (currentPageIndex < pages.length - 1) {
+        currentPageIndex++;
+        renderPage(currentPageIndex);
+        // On mobile ONLY: scroll to top when page changes via Next
+        scrollToTopIfMobile();
+      } else {
+        // On final page, show interactive mascot FAQ screen
+        enterFaqMode();
+        // scroll handled inside enterFaqMode for mobile
+      }
+    });
+
+    renderPage(currentPageIndex);
+  </script>
+</body>
+</html>
