@@ -107,7 +107,7 @@
       margin-bottom: 0.8rem;
     }
 
-    /* ---------- Mascot: pinch-grip themed ---------- */
+    /* ---------- Mascot: cat paws + fish ---------- */
     .mascot {
       flex-shrink: 0;
       width: 108px;
@@ -134,97 +134,115 @@
       height: 72px;
     }
 
-    /* Hand doing a pinch grip */
-    .mascot-hand {
+    /* Cat paws */
+    .cat-paw {
       position: absolute;
-      inset: 10px 8px 12px 8px;
-      border-radius: 18px;
-      background: radial-gradient(circle at 30% 20%, #fff 0, #ffe8f6 55%, #ffd2ea 100%);
-      box-shadow: 0 4px 8px rgba(255, 164, 210, 0.65);
+      width: 40px;
+      height: 40px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(255, 160, 209, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .mascot-hand::before {
-      content: "";
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 8px;
-      height: 22px;
-      border-radius: 14px;
-      background: linear-gradient(180deg, #ffe0f3, #ffc3df);
+    .cat-paw-left {
+      bottom: 2px;
+      left: -2px;
+      transform: rotate(-12deg);
     }
 
-    .mascot-thumb,
-    .mascot-finger {
+    .cat-paw-right {
+      bottom: 2px;
+      right: -2px;
+      transform: rotate(12deg);
+    }
+
+    .paw-pad-main {
+      width: 20px;
+      height: 20px;
+      background: #ffb6d9;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .paw-toes {
       position: absolute;
-      width: 18px;
-      height: 22px;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+    }
+
+    .paw-toe {
+      width: 8px;
+      height: 10px;
+      background: #ffb6d9;
       border-radius: 999px;
-      background: linear-gradient(180deg, #ffe4f2, #ffbfdc);
-      box-shadow: 0 2px 4px rgba(255, 160, 209, 0.5);
     }
 
-    .mascot-thumb {
-      left: 10px;
-      top: 14px;
-      transform: rotate(18deg);
-    }
-
-    .mascot-finger {
-      right: 10px;
-      top: 14px;
-      transform: rotate(-18deg);
-    }
-
-    /* Device between fingers */
-    .mascot-device {
+    /* Blue fish in the paws */
+    .mascot-fish {
       position: absolute;
       left: 50%;
-      top: 20px;
-      transform: translateX(-50%);
-      width: 24px;
-      height: 26px;
-      border-radius: 7px;
-      background: linear-gradient(180deg, #f7f9ff, #e4ecff);
-      box-shadow: 0 3px 6px rgba(142, 163, 255, 0.5);
+      top: 40%;
+      transform: translate(-50%, -50%);
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center;
     }
 
-    .device-top {
-      width: 70%;
-      height: 5px;
-      margin-top: 4px;
+    .fish-body {
+      width: 52px;
+      height: 26px;
+      background: linear-gradient(90deg, #6bbcff, #4fa3f0);
       border-radius: 999px;
-      background: linear-gradient(90deg, #ff9acb, #ff6fb6);
+      position: relative;
+      box-shadow: 0 3px 6px rgba(79, 163, 240, 0.65);
     }
 
-    .device-body {
-      flex: 1;
-      width: 60%;
-      margin-top: 4px;
-      border-radius: 999px;
-      border: 2px solid #c5cffb;
-      border-top: none;
-    }
-
-    .mascot-wave-lines {
+    .fish-body::after {
+      /* subtle highlight */
+      content: "";
       position: absolute;
-      right: 6px;
-      top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      top: 4px;
+      left: 8px;
+      right: 14px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.4);
     }
 
-    .mascot-wave-lines span {
-      width: 14px;
-      height: 3px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #ff9acb, #ff6ab6);
-      opacity: 0.85;
+    .fish-tail {
+      width: 20px;
+      height: 18px;
+      background: #4fa3f0;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      margin-left: -6px;
+    }
+
+    .fish-eye {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #000000;
+      border-radius: 50%;
+      left: 10px;
+      top: 9px;
+    }
+
+    .fish-gill {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      right: 16px;
+      top: 10px;
     }
 
     .mascot-badge {
@@ -902,17 +920,33 @@
 
       <div class="mascot">
         <div class="mascot-inner">
-          <div class="mascot-hand">
-            <div class="mascot-thumb"></div>
-            <div class="mascot-finger"></div>
-            <div class="mascot-device">
-              <div class="device-top"></div>
-              <div class="device-body"></div>
+          <!-- Cat paws holding a blue fish; no cat face shown -->
+          <div class="mascot-fish">
+            <div class="fish-body">
+              <div class="fish-eye"></div>
+              <div class="fish-gill"></div>
+            </div>
+            <div class="fish-tail"></div>
+          </div>
+
+          <div class="cat-paw cat-paw-left">
+            <div class="paw-pad-main">
+              <div class="paw-toes">
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+              </div>
             </div>
           </div>
-          <div class="mascot-wave-lines">
-            <span></span>
-            <span></span>
+
+          <div class="cat-paw cat-paw-right">
+            <div class="paw-pad-main">
+              <div class="paw-toes">
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="mascot-badge" id="mascot-badge">Info Sheet</div>
@@ -968,19 +1002,19 @@
           <p>This study is being carried out by a small research team at the University of Birmingham.</p>
 
           <ul>
-            <li><strong>Primary contact:</strong> Leaf.</li>
-            <li><strong>Supporting researchers:</strong> Clark.</li>
-            <li><strong>Supervision:</strong> Max and Diar.</li>
+            <li><strong>Primary contact:</strong> Leaf - student researcher</li>
+            <li><strong>Supporting researchers:</strong> Clark - research assistant</li>
+            <li><strong>Supervision:</strong> Max and Diar - supervisors</li>
           </ul>
 
           <p>If you have questions later about your participation or your data, you can email:</p>
           <ul>
             <li><strong>axc103@student.bham.ac.uk</strong> (primary email)</li>
-            <li>Max and Diar (secondary email)</li>
+            <li>Put another email here zzzz(secondary email)</li>
           </ul>
 
           <div class="tip-box">
-            🐰 You never have to handle anything alone — if something feels unclear or worrying at any time,
+            If something feels unclear or worrying at any time,
             you can always ask the researcher in the room or contact us by email.
           </div>
         `
@@ -988,7 +1022,7 @@
       {
         phaseLabel: "Device",
         title: "Meet the Device 🎀",
-        subtitle: "The tiny pinch-grip measuring tool you’ll be holding",
+        subtitle: "The tiny pinch-grip tool you’ll be holding",
         speech: "This device is more sensitive than it looks! It can feel how hard you pinch and how much you move 💫",
         html: `
           <p>You’ll be using a <span class="highlight">small device pinched between your thumb and index finger</span>.
@@ -999,14 +1033,13 @@
             <li><strong>Torque</strong> = how steady your hold is ↻</li>
           </ul>
 
-          <p>When you pinch and hold the device, the tiny metal piece inside bends ever so slightly.
-          As it bends, its electrical resistance changes, and our sensors measure that change.</p>
+          <p>When you pinch and hold the device, our sensors measure that change.</p>
 
           <p>Later on, the computer turns those measurements into numbers so we can look at things like:</p>
 
           <ul>
-            <li><strong>Average grip force</strong> (your overall squeeze)</li>
-            <li><strong>Peak force</strong> (the strongest squeeze you used)</li>
+            <li><strong>Average grip force</strong> (your overall pinch)</li>
+            <li><strong>Peak force</strong> (the strongest you pinched)</li>
             <li><strong>Reaction Time</strong> (how quickly you automatically responded)</li>
             <li><strong>Movement Time</strong> (how quickly you tightened your pinch)</li>
           </ul>
@@ -1114,13 +1147,13 @@
               aria-label="Animated example of lifting the device between the 5 cm and 30 cm markers"
             >
               <div class="practice-markers">
-                <div class="marker marker-5">
-                  <span class="marker-line"></span>
-                  <span class="marker-label">5&nbsp;cm</span>
-                </div>
                 <div class="marker marker-30">
                   <span class="marker-line"></span>
                   <span class="marker-label">30&nbsp;cm</span>
+                </div>
+                <div class="marker marker-5">
+                  <span class="marker-line"></span>
+                  <span class="marker-label">5&nbsp;cm</span>
                 </div>
               </div>
 
@@ -1211,16 +1244,16 @@
       {
         phaseLabel: "Before start",
         title: "Before We Start 🧼",
-        subtitle: "Wash, dry, get in position",
-        speech: "Almost ready! Just a few little prep steps so the measurements are as clean as possible 💖",
+        subtitle: "What happens next",
+        speech: "Almost ready! Just a few little prep steps you need to be aware of 💖",
         html: `
           <p>Before the actual task begins, there are a few steps:</p>
 
           <ul>
             <li>You’ll complete a <strong>questionnaire</strong>.</li>
             <li>You’ll then be scheduled for the experiment session.</li>
-            <li>When you arrive, you’ll be asked to <strong>wash your hands with a natural soap</strong>
-              to remove grease (some soaps like Dove can leave a residue).</li>
+            <li>When you arrive, you’ll be asked to <strong>wash your hands with a natural soap provided</strong>
+              to remove grease (some soaps can leave a residue).</li>
             <li>You’ll dry your hands with the <strong>kitchen roll provided</strong>.</li>
             <li>You’ll then sit with one hand hovering over the table in a cubicle, facing the device.</li>
             <li>Your other hand will rest in your lap.</li>
@@ -1336,7 +1369,7 @@
             </a>
           </p>
           <p class="faq-note">
-            You may also be given additional email addresses (for example, Max or Diar) on your information sheet —
+            You may also be given additional email addresses (for example, Max or Diar) on your information sheet — 
             you can use those as well if you prefer.
           </p>
           <p class="faq-tagline">
