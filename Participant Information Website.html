@@ -20,7 +20,7 @@
       overflow-y: auto;
     }
 
-    /* ---------- Fluffy cloud background ---------- */
+    /* ---------- Fluffy cloud background (now stationary) ---------- */
     .cloud {
       position: absolute;
       background: #ffffffaa;
@@ -29,48 +29,35 @@
       box-shadow:
         30px 10px 40px #ffffffbb,
         -20px 5px 30px #ffffffbb;
-      animation: floatCloud 18s linear infinite;
       pointer-events: none;
     }
 
-    .cloud.cloud-1 { width: 220px; height: 80px; top: 8%; left: 5%; animation-delay: 0s; }
-    .cloud.cloud-2 { width: 260px; height: 90px; top: 18%; right: -10%; animation-delay: 4s; }
-    .cloud.cloud-3 { width: 180px; height: 70px; bottom: 10%; left: -15%; animation-delay: 8s; }
+    .cloud.cloud-1 { width: 220px; height: 80px; top: 8%; left: 5%; }
+    .cloud.cloud-2 { width: 100px; height: 90px; top: 18%; right: 0%; }
+    .cloud.cloud-3 { width: 180px; height: 70px; bottom: 10%; left: 15%; }
 
-    @keyframes floatCloud {
-      0% { transform: translateX(0); opacity: 0.75; }
-      50% { opacity: 1; }
-      100% { transform: translateX(40vw); opacity: 0.75; }
-    }
-
-    /* ---------- Sparkles ---------- */
+    /* ---------- Sparkles (now stationary) ---------- */
     .sparkle {
       position: absolute;
       width: 8px;
       height: 8px;
       background: radial-gradient(circle, #fff 0, #ffe2f5 40%, transparent 70%);
       border-radius: 50%;
-      animation: twinkle 2.2s ease-in-out infinite alternate;
       pointer-events: none;
     }
 
-    .sparkle.s1 { top: 12%; left: 40%; animation-delay: 0.1s; }
-    .sparkle.s2 { top: 30%; right: 15%; animation-delay: 0.5s; }
-    .sparkle.s3 { bottom: 20%; left: 25%; animation-delay: 0.9s; }
-    .sparkle.s4 { bottom: 8%; right: 35%; animation-delay: 1.3s; }
-
-    @keyframes twinkle {
-      0% { transform: scale(0.7); opacity: 0.4; }
-      100% { transform: scale(1.2); opacity: 1; }
-    }
+    .sparkle.s1 { top: 12%; left: 40%; }
+    .sparkle.s2 { top: 30%; right: 15%; }
+    .sparkle.s3 { bottom: 20%; left: 25%; }
+    .sparkle.s4 { bottom: 8%; right: 35%; }
 
     /* ---------- Main card ---------- */
     .page-wrapper {
       width: 100%;
-      max-width: 820px;
+      max-width: 920px;
       background: #ffffffee;
       backdrop-filter: blur(10px);
-      padding: 2.3rem 2.6rem 2rem;
+      padding: 2.3rem 2.4rem 2rem;
       border-radius: 26px;
       border: 2px solid #ffb6dd;
       box-shadow: 0 14px 35px rgba(255, 105, 180, 0.27);
@@ -91,7 +78,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 1rem;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.4rem;
     }
 
     h1 {
@@ -105,6 +92,18 @@
       font-size: 0.95rem;
       color: #a34e88;
       margin-bottom: 0.8rem;
+    }
+
+    /* ---------- Body layout: timeline left, content right ---------- */
+    .page-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.8rem;
+    }
+
+    .page-main {
+      flex: 1;
+      min-width: 0;
     }
 
     /* ---------- Mascot: cat paws + fish ---------- */
@@ -340,9 +339,14 @@
       background: #ff7ebc;
     }
 
-    /* ---------- Progress + nav ---------- */
+    /* ---------- Progress + nav + timeline layout ---------- */
     #progress-section {
       margin-top: 1.3rem;
+    }
+
+    .progress-main {
+      flex: 1;
+      min-width: 0;
     }
 
     .progress-bar {
@@ -362,38 +366,47 @@
     }
 
     .page-indicator {
-      text-align: center;
+      text-align: left;
       color: #d25397;
       margin-top: 0.45rem;
       font-size: 0.92rem;
       font-weight: 600;
     }
 
-    /* Clickable phase timeline */
+    /* Timeline down the left side – now larger for readability */
     .phase-timeline {
-      margin-top: 0.6rem;
       display: flex;
-      gap: 0.4rem;
-      overflow-x: auto;
-      padding-bottom: 0.25rem;
+      flex-direction: column;
+      gap: 0.55rem;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
       -webkit-overflow-scrolling: touch;
+      min-width: 190px;
+      max-width: 100%;
+      padding-top: 0.2rem;
+      border-right: 1px dashed #ffb8de;
+      padding-right: 0.9rem;
     }
 
     .phase-pill {
       flex: 0 0 auto;
-      padding: 0.25rem 0.65rem;
+      padding: 0.4rem 0.85rem;
       border-radius: 999px;
       border: 1px solid #ffb8de;
       background: #fff7fd;
-      font-size: 0.78rem;
-      color: #b04882;
-      white-space: nowrap;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      color: #8a2c60;
       cursor: pointer;
       transition:
         background 0.18s ease,
         color 0.18s ease,
         box-shadow 0.18s ease,
         transform 0.08s ease;
+      text-align: left;
+      white-space: normal;     /* allow wrapping */
+      word-break: keep-all;
     }
 
     .phase-pill:hover {
@@ -409,12 +422,12 @@
     }
 
     .phase-pill-index {
-      font-weight: 700;
-      margin-right: 0.3rem;
+      font-weight: 800;
+      margin-right: 0.35rem;
     }
 
     .phase-pill-label {
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .nav {
@@ -505,7 +518,7 @@
 
     .diagram-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 0.75rem;
     }
 
@@ -613,7 +626,7 @@
       background: radial-gradient(circle at 50% 0%, #ffffff 0, #ffeefe 48%, #ffd8f0 100%);
       border: 1px solid #ffd0ec;
       padding: 0.65rem 0.9rem 0.8rem;
-      height: 140px;
+      height: 250px;
       overflow: hidden;
     }
 
@@ -622,7 +635,7 @@
       left: 6%;
       right: 6%;
       bottom: 10px;
-      height: 10px;
+      height: 7px;
       border-radius: 10px;
       background: linear-gradient(180deg, #f4c2e4, #e09bce);
       box-shadow: 0 -2px 6px rgba(195, 88, 151, 0.55) inset;
@@ -631,8 +644,8 @@
     .practice-markers {
       position: absolute;
       left: 9%;
-      top: 10px;
-      bottom: 20px;
+      top: 20px;
+      bottom: 70px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -661,7 +674,7 @@
     .practice-device {
       position: absolute;
       left: 50%;
-      bottom: 14px;
+      bottom: 20px;
       width: 84px;
       height: 42px;
       transform: translate(-50%, 0);
@@ -721,12 +734,12 @@
 
     @keyframes practiceSequence {
       0%   { transform: translate(-50%, 0); }
-      10%  { transform: translate(-50%, 0); }
-      22%  { transform: translate(-50%, -32px); }
-      38%  { transform: translate(-50%, -32px); }
-      52%  { transform: translate(-50%, -76px); }
-      68%  { transform: translate(-50%, -76px); }
-      82%  { transform: translate(-50%, -32px); }
+      10%  { transform: translate(-50%, -20px); }
+      25%  { transform: translate(-50%, -20px); }
+      45%  { transform: translate(-50%, -185px); }
+      60%  { transform: translate(-50%, -185px); }
+      80%  { transform: translate(-50%, -20px); }
+      90%  { transform: translate(-50%, -20px); }
       100% { transform: translate(-50%, 0); }
     }
 
@@ -859,6 +872,15 @@
       font-style: italic;
     }
 
+    /* -- Avoid 2-col table using a mid-size media query --*/
+    @media (max-width: 868px) {
+      .diagram-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(150px, 1fr));
+        gap: 0.75rem;
+      }
+    }
+
     /* ---------- Small screen tweaks ---------- */
     @media (max-width: 640px) {
       body {
@@ -878,6 +900,24 @@
       h1 {
         font-size: 1.4rem;
       }
+
+      .page-body {
+        flex-direction: column;
+      }
+
+      .phase-timeline {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: visible;
+        border-right: none;
+        border-bottom: 1px dashed #ffb8de;
+        padding-right: 0;
+        padding-bottom: 0.6rem;
+        min-width: 0;
+      }
+
       .nav {
         flex-direction: column-reverse;
         align-items: stretch;
@@ -892,17 +932,14 @@
         grid-template-columns: minmax(0, 1fr);
       }
       .practice-viewport {
-        height: 130px;
+        height: 250px;
         padding: 0.6rem 0.65rem 0.7rem;
-      }
-      .phase-timeline {
-        margin-top: 0.5rem;
       }
     }
   </style>
 </head>
 <body>
-  <!-- clouds & sparkles in the background -->
+  <!-- clouds & sparkles in the background (now static) -->
   <div class="cloud cloud-1"></div>
   <div class="cloud cloud-2"></div>
   <div class="cloud cloud-3"></div>
@@ -953,21 +990,28 @@
       </div>
     </div>
 
-    <div class="mascot-speech" id="mascot-speech"></div>
-
-    <div id="page-content"></div>
-
-    <div id="progress-section">
-      <div class="progress-bar">
-        <div id="progress-fill" class="progress-fill"></div>
-      </div>
-      <div id="page-indicator" class="page-indicator"></div>
+    <div class="page-body">
       <div id="phase-timeline" class="phase-timeline"></div>
-    </div>
 
-    <div class="nav" id="nav">
-      <button id="back-btn" class="heart-button secondary">Back</button>
-      <button id="next-btn" class="heart-button primary">Next</button>
+      <div class="page-main">
+        <div class="mascot-speech" id="mascot-speech"></div>
+
+        <div id="page-content"></div>
+
+        <div id="progress-section">
+          <div class="progress-main">
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="page-indicator" class="page-indicator"></div>
+          </div>
+        </div>
+
+        <div class="nav" id="nav">
+          <button id="back-btn" class="heart-button secondary">Back</button>
+          <button id="next-btn" class="heart-button primary">Next</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -991,14 +1035,9 @@
           <div class="tip-box">
             🌼 <strong>Take your time reading.</strong> You can always ask the researcher if something doesn’t make sense.
           </div>
-        `
-      },
-      {
-        phaseLabel: "Research team",
-        title: "Who is running this study? 🧑‍🔬",
-        subtitle: "Meet the research team",
-        speech: "A small research team will be with you throughout the session. Here’s who they are and how they can help 🌷",
-        html: `
+
+          <p style="margin-top:1.2rem;"><strong>Who is running this study?</strong></p>
+
           <p>This study is being carried out by a small research team at the University of Birmingham.</p>
 
           <ul>
@@ -1494,6 +1533,12 @@
 
       setupPracticeAnimationIfPresent();
 
+      // Show timeline & progress section (in case coming back from FAQ)
+      phaseTimelineEl.style.display = "flex";
+      progressSectionEl.style.display = "block";
+      navEl.style.display = "flex";
+      mascotBadgeEl.textContent = "Info Sheet";
+
       // Back button visibility
       if (index === 0) {
         backBtn.style.display = "none";
@@ -1510,10 +1555,6 @@
         nextBtn.textContent = "Next";
         nextBtn.classList.remove("done");
       }
-
-      navEl.style.display = "flex";
-      progressSectionEl.style.display = "block";
-      mascotBadgeEl.textContent = "Info Sheet";
 
       pageIndicatorEl.textContent = `Page ${index + 1} of ${pages.length}`;
       const progress = ((index + 1) / pages.length) * 100;
@@ -1534,6 +1575,7 @@
 
       progressSectionEl.style.display = "none";
       navEl.style.display = "none";
+      phaseTimelineEl.style.display = "none";
 
       pageContentEl.innerHTML = `
         <div class="faq-wrapper">
