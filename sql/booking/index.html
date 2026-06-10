@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Book your session</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem;
+      background: linear-gradient(180deg, #ffe6f4, #ffdff0 45%, #fff7fb);
+      box-sizing: border-box;
+      color: #000;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 640px;
+      background: #ffffffee;
+      backdrop-filter: blur(10px);
+      padding: 2rem 2.2rem;
+      border-radius: 26px;
+      border: 2px solid #ffb6dd;
+      box-shadow: 0 14px 35px rgba(255, 105, 180, 0.27);
+      box-sizing: border-box;
+    }
+
+    .mascot {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+
+    h1 {
+      margin: 0 0 0.2rem;
+      font-size: 1.5rem;
+      color: #e6459b;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #a34e88;
+      text-align: center;
+      margin-bottom: 1.4rem;
+    }
+
+    /* notice box, used for missing code / errors / setup */
+    .notice {
+      background: #fff5fb;
+      border: 1px dashed #ff9fcb;
+      border-radius: 14px;
+      padding: 1rem 1.1rem;
+      color: #7a3268;
+      line-height: 1.6;
+      font-size: 0.98rem;
+    }
+    .notice strong { color: #d83786; }
+
+    /* month navigation */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.9rem;
+    }
+    .month-label {
+      font-weight: 800;
+      color: #b7357b;
+      font-size: 1.1rem;
+    }
+    .nav-btn {
+      border: none;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(255, 105, 180, 0.45);
+    }
+    .nav-btn:disabled {
+      background: #f1d4e4;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    /* legend */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: #7a3268;
+      margin-bottom: 1rem;
+    }
+    .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
+    .swatch {
+      width: 0.85rem;
+      height: 0.85rem;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    .swatch.free { background: #c9f0d4; }
+    .swatch.half { background: #ffe0b3; }
+    .swatch.full { background: #ffc1c1; }
+    .swatch.none { background: #ececec; }
+
+    /* calendar grid */
+    .weekdays, .grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .weekdays {
+      margin-bottom: 6px;
+    }
+    .weekday {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #b06a96;
+      padding: 0.2rem 0;
+    }
+    .cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: 1px solid rgba(0,0,0,0.05);
+      user-select: none;
+    }
+    .cell.blank { background: transparent; border: none; }
+    .cell.free { background: #c9f0d4; color: #2f7d4f; cursor: pointer; }
+    .cell.half { background: #ffe0b3; color: #99601a; cursor: pointer; }
+    .cell.full { background: #ffc1c1; color: #9c3a3a; }
+    .cell.none, .cell.past { background: #ececec; color: #b3b3b3; }
+    .cell.free:hover, .cell.half:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 7px rgba(255, 132, 195, 0.45);
+    }
+    .cell .count {
+      font-size: 0.62rem;
+      font-weight: 600;
+      opacity: 0.85;
+      margin-top: 0.1rem;
+    }
+
+    .hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #a34e88;
+      margin-top: 0.9rem;
+      font-style: italic;
+    }
+
+    /* day view */
+    .back-btn {
+      border: none;
+      background: linear-gradient(135deg, #ffdbe9, #ffc3df);
+      color: #b13675;
+      font-weight: 800;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .day-title {
+      font-weight: 800;
+      color: #b7357b;
+      font-size: 1.15rem;
+      margin-bottom: 0.9rem;
+    }
+    .times {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.6rem;
+    }
+    .time-btn {
+      border: none;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.7rem 0.5rem;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
+    }
+    .time-btn:hover { transform: translateY(-1px); }
+    .time-btn.taken {
+      background: #ececec;
+      color: #b3b3b3;
+      cursor: default;
+      box-shadow: none;
+      text-decoration: line-through;
+    }
+
+    /* confirm + result */
+    .confirm-box, .result-box {
+      background: #fff5fb;
+      border: 1px solid #ffd1ec;
+      border-radius: 16px;
+      padding: 1.2rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .confirm-box .big, .result-box .big {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #d83786;
+      margin: 0.3rem 0 0.9rem;
+    }
+    .heart-button {
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.98rem;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      box-shadow: 0 5px 12px rgba(255, 105, 180, 0.45);
+      margin: 0.3rem;
+    }
+    .heart-button.secondary {
+      background: linear-gradient(135deg, #ffdbe9, #ffc3df);
+      color: #b13675;
+    }
+    .reference {
+      font-size: 0.82rem;
+      color: #8a3b6f;
+      margin-top: 0.8rem;
+      word-break: break-all;
+    }
+    .reminder {
+      background: #fff7fd;
+      border-radius: 12px;
+      border: 1px dashed #ffbcd7;
+      padding: 0.7rem 0.9rem;
+      font-size: 0.88rem;
+      color: #7a3268;
+      margin-top: 1rem;
+      text-align: left;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="mascot">🐱🐟</div>
+    <h1>Book your session</h1>
+    <div class="subtitle">Pick a day, then a time that suits you 🎀</div>
+
+    <div id="notice" class="notice hidden"></div>
+
+    <!-- month view -->
+    <div id="month-view" class="hidden">
+      <div class="month-nav">
+        <button id="prev-month" class="nav-btn" aria-label="Previous month">‹</button>
+        <div id="month-label" class="month-label"></div>
+        <button id="next-month" class="nav-btn" aria-label="Next month">›</button>
+      </div>
+      <div class="legend">
+        <span><span class="swatch free"></span> Free</span>
+        <span><span class="swatch half"></span> Filling up</span>
+        <span><span class="swatch full"></span> Full</span>
+        <span><span class="swatch none"></span> No slots</span>
+      </div>
+      <div class="weekdays" id="weekdays"></div>
+      <div class="grid" id="grid"></div>
+      <div id="hint" class="hint hidden"></div>
+    </div>
+
+    <!-- day view -->
+    <div id="day-view" class="hidden">
+      <button id="back-btn" class="back-btn">‹ Back to calendar</button>
+      <div id="day-title" class="day-title"></div>
+      <div id="times" class="times"></div>
+    </div>
+
+    <!-- result view -->
+    <div id="result-view" class="hidden"></div>
+  </div>
+
+  <script>
+
+    const SUPABASE_URL = "https://rkxzshpwipcgyjvcofid.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJreHpzaHB3aXBjZ3lqdmNvZmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjM0MTksImV4cCI6MjA5NjQ5OTQxOX0.Y8oxEqpn7HLDGb2OASPOeiPY5p80jRbVK3QEwGOtMNA";
+  // don't expose the SECRET key here !!
+
+    const TZ = "Europe/London";
+
+    // friendly messages for each reason the booking function can return
+    const REASONS = {
+      missing_code: "We couldn't read your participant code. Please go back to the questionnaire and use the link at the end of it.",
+      no_such_slot: "That slot could no longer be found. Please choose another time.",
+      slot_not_open: "That slot isn't available any more. Please choose another time.",
+      too_soon: "That time is now less than 24 hours away, so it can't be booked. Please pick a time a little further ahead.",
+      slot_taken: "Sorry, someone just took that slot. Please choose another time.",
+      race_lost: "Sorry, someone just took that slot. Please choose another time.",
+      already_booked: "Our records show you already have a booking. If you need to change it, please email the research team."
+    };
+
+    // ---- small helpers ----
+    const $ = (id) => document.getElementById(id);
+    const pad = (n) => String(n).padStart(2, "0");
+
+    function showOnly(id) {
+      ["notice", "month-view", "day-view", "result-view"].forEach((v) => {
+        $(v).classList.toggle("hidden", v !== id);
+      });
+    }
+
+    function showNotice(html) {
+      $("notice").innerHTML = html;
+      showOnly("notice");
+    }
+
+    // YYYY-MM-DD for a Date, in London civil terms
+    function londonDateKey(date) {
+      return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(date);
+    }
+    // HH:MM for a Date, in London time
+    function londonTime(date) {
+      return new Intl.DateTimeFormat("en-GB", {
+        timeZone: TZ, hour: "2-digit", minute: "2-digit"
+      }).format(date);
+    }
+
+    async function api(path, opts = {}) {
+      const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
+        ...opts,
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: "Bearer " + SUPABASE_ANON_KEY,
+          ...(opts.headers || {})
+        }
+      });
+      if (!res.ok) throw new Error("request failed: " + res.status);
+      return res.json();
+    }
+
+    // ---- state ----
+    const state = {
+      code: null,
+      days: {},        // dateKey -> { total, booked, bookable }
+      slots: [],       // [{ slot_id, starts_at, duration_minutes, is_booked, is_bookable }]
+      year: 0,
+      month: 0,        // 0-indexed
+      todayKey: ""
+    };
+
+    // ---- load everything ----
+    async function load() {
+      const [days, slots] = await Promise.all([
+        api("day_availability?select=*"),
+        api("slot_availability?select=*&order=starts_at")
+      ]);
+
+      state.days = {};
+      for (const d of days) {
+        state.days[d.day] = {
+          total: Number(d.total_slots),
+          booked: Number(d.booked_slots),
+          bookable: Number(d.bookable_slots)
+        };
+      }
+      state.slots = slots;
+      renderMonth();
+    }
+
+    // ---- month grid ----
+    function dayClass(key, counts) {
+      if (key < state.todayKey) return { cls: "past", clickable: false };
+      if (!counts || counts.total === 0) return { cls: "none", clickable: false };
+      if (counts.booked >= counts.total) return { cls: "full", clickable: false };
+      if (counts.bookable === 0) return { cls: "none", clickable: false };
+      if (counts.booked * 2 >= counts.total) return { cls: "half", clickable: true };
+      return { cls: "free", clickable: true };
+    }
+
+    function renderMonth() {
+      showOnly("month-view");
+
+      const monthNames = ["January","February","March","April","May","June",
+        "July","August","September","October","November","December"];
+      $("month-label").textContent = monthNames[state.month] + " " + state.year;
+
+      // weekday headers, week starts Monday
+      const wd = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+      $("weekdays").innerHTML = wd.map((d) => '<div class="weekday">' + d + "</div>").join("");
+
+      const grid = $("grid");
+      grid.innerHTML = "";
+
+      const firstWeekday = (new Date(state.year, state.month, 1).getDay() + 6) % 7; // Mon=0
+      const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
+
+      for (let i = 0; i < firstWeekday; i++) {
+        const blank = document.createElement("div");
+        blank.className = "cell blank";
+        grid.appendChild(blank);
+      }
+
+      let anyClickable = false;
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = state.year + "-" + pad(state.month + 1) + "-" + pad(day);
+        const counts = state.days[key];
+        const { cls, clickable } = dayClass(key, counts);
+
+        const cell = document.createElement("div");
+        cell.className = "cell " + cls;
+        cell.innerHTML = '<div>' + day + "</div>";
+
+        if (counts && counts.total > 0 && cls !== "past") {
+          const free = counts.total - counts.booked;
+          cell.innerHTML += '<div class="count">' + free + " free</div>";
+        }
+
+        if (clickable) {
+          anyClickable = true;
+          cell.addEventListener("click", () => renderDay(key));
+        }
+
+        grid.appendChild(cell);
+      }
+
+      // restrict the back arrow so people can't page into the past
+      const firstOfThisMonth = state.year + "-" + pad(state.month + 1) + "-01";
+      const todayMonthStart = state.todayKey.slice(0, 7) + "-01";
+      $("prev-month").disabled = firstOfThisMonth <= todayMonthStart;
+
+      const hint = $("hint");
+      if (!anyClickable) {
+        hint.textContent = "No times to book this month. Try the arrow to look ahead.";
+        hint.classList.remove("hidden");
+      } else {
+        hint.classList.add("hidden");
+      }
+    }
+
+    function changeMonth(delta) {
+      state.month += delta;
+      if (state.month < 0) { state.month = 11; state.year--; }
+      if (state.month > 11) { state.month = 0; state.year++; }
+      renderMonth();
+    }
+
+    // ---- day view ----
+    function renderDay(dayKey) {
+      showOnly("day-view");
+
+      const daySlots = state.slots.filter((s) => londonDateKey(new Date(s.starts_at)) === dayKey);
+
+      const pretty = new Intl.DateTimeFormat("en-GB", {
+        timeZone: TZ, weekday: "long", day: "numeric", month: "long"
+      }).format(new Date(dayKey + "T12:00:00Z"));
+      $("day-title").textContent = pretty;
+
+      const times = $("times");
+      times.innerHTML = "";
+
+      daySlots.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
+
+      for (const slot of daySlots) {
+        const btn = document.createElement("button");
+        btn.textContent = londonTime(new Date(slot.starts_at));
+        if (slot.is_bookable) {
+          btn.className = "time-btn";
+          btn.addEventListener("click", () => confirmSlot(slot, dayKey));
+        } else {
+          btn.className = "time-btn taken";
+          btn.disabled = true;
+        }
+        times.appendChild(btn);
+      }
+    }
+
+    // ---- confirm step ----
+    function confirmSlot(slot, dayKey) {
+      showOnly("result-view");
+      const when = new Intl.DateTimeFormat("en-GB", {
+        timeZone: TZ, weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
+      }).format(new Date(slot.starts_at));
+
+      $("result-view").innerHTML = `
+        <div class="confirm-box">
+          <div>Book this session?</div>
+          <div class="big">${when}</div>
+          <button class="heart-button" id="do-book">Yes, book it</button>
+          <button class="heart-button secondary" id="cancel-book">Pick another time</button>
+        </div>`;
+
+      $("cancel-book").addEventListener("click", () => renderDay(dayKey));
+      $("do-book").addEventListener("click", () => doBook(slot, when));
+    }
+
+    // ---- the actual write, via book_slot ----
+    async function doBook(slot, when) {
+      $("do-book").disabled = true;
+      $("do-book").textContent = "Booking...";
+
+      try {
+        const result = await api("rpc/book_slot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ p_code: state.code, p_slot_id: slot.slot_id })
+        });
+
+        if (result && result.ok) {
+          showResult(when);
+        } else {
+          const reason = (result && result.reason) || "unknown";
+          showProblem(REASONS[reason] || "Something went wrong booking that slot. Please try another time.");
+        }
+      } catch (e) {
+        showProblem("We couldn't reach the booking system just now. Please check your connection and try again.");
+      }
+    }
+
+    function showResult(when) {
+      showOnly("result-view");
+      $("result-view").innerHTML = `
+        <div class="result-box">
+          <div style="font-size:2rem;">🎉</div>
+          <div>You're booked in for</div>
+          <div class="big">${when}</div>
+          <div class="reminder">
+            🌸 Please re-read the participant information sheet before your session.
+            If you need to change or cancel, email the research team and quote your reference below.
+          </div>
+          <div class="reference">Reference: ${state.code}</div>
+        </div>`;
+    }
+
+    function showProblem(msg) {
+      showOnly("result-view");
+      $("result-view").innerHTML = `
+        <div class="result-box">
+          <div style="font-size:1.6rem;">🌼</div>
+          <div>${msg}</div>
+          <button class="heart-button" id="try-again">Back to the calendar</button>
+        </div>`;
+      $("try-again").addEventListener("click", () => load());
+    }
+
+    // ---- start up ----
+    function init() {
+      // setup check
+      if (SUPABASE_URL.includes("PASTE_") || SUPABASE_ANON_KEY.includes("PASTE_")) {
+        showNotice("<strong>Almost there.</strong> This page still needs your Supabase project URL and anon key filling in near the top of the file.");
+        return;
+      }
+
+      // the participant code arrives in the URL from the Qualtrics redirect
+      const params = new URLSearchParams(window.location.search);
+      const code = (params.get("code") || "").trim();
+      if (!code) {
+        showNotice("<strong>One step first.</strong> Please complete the questionnaire before booking. Use the booking link shown at the end of it, which carries your details across so you don't have to type anything here.");
+        return;
+      }
+      state.code = code;
+
+      state.todayKey = londonDateKey(new Date());
+      state.year = parseInt(state.todayKey.slice(0, 4), 10);
+      state.month = parseInt(state.todayKey.slice(5, 7), 10) - 1;
+
+      $("prev-month").addEventListener("click", () => changeMonth(-1));
+      $("next-month").addEventListener("click", () => changeMonth(1));
+      $("back-btn").addEventListener("click", renderMonth);
+
+      load().catch(() => {
+        showNotice("We couldn't load the available times. If you've just set up the page, double-check the Supabase URL and key near the top of the file.");
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
