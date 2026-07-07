@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Book your session</title>
+  <title>Pinch Grip Experiment Instructions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    /* ---------- Base layout ---------- */
     body {
       font-family: "Nunito", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
@@ -14,597 +15,1577 @@
       align-items: flex-start;
       padding: 2rem;
       background: linear-gradient(180deg, #ffe6f4, #ffdff0 45%, #fff7fb);
-      box-sizing: border-box;
-      color: #000;
+      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
 
-    .card {
+    /* ---------- Fluffy cloud background (now stationary) ---------- */
+    .cloud {
+      position: absolute;
+      background: #ffffffaa;
+      border-radius: 999px;
+      filter: blur(2px);
+      box-shadow:
+        30px 10px 40px #ffffffbb,
+        -20px 5px 30px #ffffffbb;
+      pointer-events: none;
+    }
+
+    .cloud.cloud-1 { width: 220px; height: 80px; top: 8%; left: 5%; }
+    .cloud.cloud-2 { width: 100px; height: 90px; top: 18%; right: 0%; }
+    .cloud.cloud-3 { width: 180px; height: 70px; bottom: 10%; left: 15%; }
+
+    /* ---------- Sparkles (now stationary) ---------- */
+    .sparkle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: radial-gradient(circle, #fff 0, #ffe2f5 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .sparkle.s1 { top: 12%; left: 40%; }
+    .sparkle.s2 { top: 30%; right: 15%; }
+    .sparkle.s3 { bottom: 20%; left: 25%; }
+    .sparkle.s4 { bottom: 8%; right: 35%; }
+
+    /* ---------- Main card ---------- */
+    .page-wrapper {
       width: 100%;
-      max-width: 640px;
+      max-width: 920px;
       background: #ffffffee;
       backdrop-filter: blur(10px);
-      padding: 2rem 2.2rem;
+      padding: 2.3rem 2.4rem 2rem;
       border-radius: 26px;
       border: 2px solid #ffb6dd;
       box-shadow: 0 14px 35px rgba(255, 105, 180, 0.27);
+      position: relative;
+      z-index: 2;
+      animation: floatIn 0.6s ease-out;
       box-sizing: border-box;
+      margin-bottom: 2rem;
     }
 
-    .mascot {
-      font-size: 2rem;
-      text-align: center;
-      margin-bottom: 0.3rem;
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
     }
 
     h1 {
-      margin: 0 0 0.2rem;
-      font-size: 1.5rem;
+      margin: 0;
+      font-size: 1.7rem;
       color: #e6459b;
       font-weight: 800;
-      text-align: center;
     }
 
     .subtitle {
       font-size: 0.95rem;
       color: #a34e88;
-      text-align: center;
-      margin-bottom: 1.4rem;
+      margin-bottom: 0.8rem;
     }
 
-    /* notice box, used for missing code / errors / setup */
-    .notice {
-      background: #fff5fb;
-      border: 1px dashed #ff9fcb;
-      border-radius: 14px;
-      padding: 1rem 1.1rem;
-      color: #7a3268;
-      line-height: 1.6;
-      font-size: 0.98rem;
+    /* ---------- Body layout: timeline left, content right ---------- */
+    .page-body {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.8rem;
     }
-    .notice strong { color: #d83786; }
 
-    /* month navigation */
-    .month-nav {
+    .page-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ---------- Mascot: cat paws + fish ---------- */
+    .mascot {
+      flex-shrink: 0;
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #ffe5f2 35%, #ffc1de 100%);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 0.9rem;
-    }
-    .month-label {
-      font-weight: 800;
-      color: #b7357b;
-      font-size: 1.1rem;
-    }
-    .nav-btn {
-      border: none;
-      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
-      color: #fff;
-      font-weight: 800;
-      font-size: 1rem;
-      width: 2.2rem;
-      height: 2.2rem;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(255, 105, 180, 0.45);
-    }
-    .nav-btn:disabled {
-      background: #f1d4e4;
-      cursor: default;
-      box-shadow: none;
-    }
-
-    /* legend */
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
       justify-content: center;
-      font-size: 0.8rem;
-      color: #7a3268;
-      margin-bottom: 1rem;
+      box-shadow: 0 8px 16px rgba(255, 155, 204, 0.55);
+      position: relative;
+      overflow: visible;
+      animation: mascotFloat 3s ease-in-out infinite;
     }
-    .legend span { display: inline-flex; align-items: center; gap: 0.35rem; }
-    .swatch {
-      width: 0.85rem;
-      height: 0.85rem;
-      border-radius: 4px;
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-    .swatch.free { background: #c9f0d4; }
-    .swatch.half { background: #ffe0b3; }
-    .swatch.full { background: #ffc1c1; }
-    .swatch.none { background: #ececec; }
 
-    /* calendar grid */
-    .weekdays, .grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
+    @keyframes mascotFloat {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
     }
-    .weekdays {
-      margin-bottom: 6px;
+
+    .mascot-inner {
+      position: relative;
+      width: 72px;
+      height: 72px;
     }
-    .weekday {
-      text-align: center;
-      font-size: 0.75rem;
+
+    /* Cat paws */
+    .cat-paw {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: #ffffff;
+      border-radius: 50%;
+      box-shadow: 0 4px 8px rgba(255, 160, 209, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cat-paw-left {
+      bottom: 2px;
+      left: -2px;
+      transform: rotate(-12deg);
+    }
+
+    .cat-paw-right {
+      bottom: 2px;
+      right: -2px;
+      transform: rotate(12deg);
+    }
+
+    .paw-pad-main {
+      width: 20px;
+      height: 20px;
+      background: #ffb6d9;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .paw-toes {
+      position: absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 3px;
+    }
+
+    .paw-toe {
+      width: 8px;
+      height: 10px;
+      background: #ffb6d9;
+      border-radius: 999px;
+    }
+
+    /* Blue fish in the paws */
+    .mascot-fish {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fish-body {
+      width: 52px;
+      height: 26px;
+      background: linear-gradient(90deg, #6bbcff, #4fa3f0);
+      border-radius: 999px;
+      position: relative;
+      box-shadow: 0 3px 6px rgba(79, 163, 240, 0.65);
+    }
+
+    .fish-body::after {
+      /* subtle highlight */
+      content: "";
+      position: absolute;
+      top: 4px;
+      left: 8px;
+      right: 14px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.4);
+    }
+
+    .fish-tail {
+      width: 20px;
+      height: 18px;
+      background: #4fa3f0;
+      clip-path: polygon(0 50%, 100% 0, 100% 100%);
+      margin-left: -6px;
+    }
+
+    .fish-eye {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #000000;
+      border-radius: 50%;
+      left: 10px;
+      top: 9px;
+    }
+
+    .fish-gill {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+      border-left-color: transparent;
+      border-bottom-color: transparent;
+      right: 16px;
+      top: 10px;
+    }
+
+    .mascot-badge {
+      position: absolute;
+      bottom: -6px;
+      right: 8px;
+      background: #ff8ec7;
+      color: #fff;
+      font-size: 0.68rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(255, 105, 180, 0.5);
       font-weight: 700;
-      color: #b06a96;
-      padding: 0.2rem 0;
     }
-    .cell {
-      aspect-ratio: 1 / 1;
-      border-radius: 12px;
+
+    .mascot-speech {
+      font-size: 0.92rem;
+      background: #fff7fd;
+      border-radius: 16px;
+      border: 1px solid #ffd1ec;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.2rem;
+      color: #7b3b70;
+      display: inline-block;
+      position: relative;
+    }
+
+    .mascot-speech::after {
+      content: "";
+      position: absolute;
+      left: 18px;
+      bottom: -8px;
+      border-width: 8px 8px 0 8px;
+      border-style: solid;
+      border-color: #ffd1ec transparent transparent transparent;
+    }
+
+    /* ---------- Content styling ---------- */
+    #page-content p {
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: #000000;
+      margin: 0.85rem 0;
+    }
+
+    #page-content ul {
+      padding-left: 1.2rem;
+      margin: 0.7rem 0 0.3rem;
+    }
+
+    #page-content li {
+      margin: 0.35rem 0;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .phase-list li::marker {
+      content: "🌸 ";
+    }
+
+    .tip-box {
+      background: #fff5fb;
+      border-radius: 14px;
+      border: 1px dashed #ff9fcb;
+      padding: 0.75rem 0.9rem;
+      font-size: 0.93rem;
+      margin-top: 0.7rem;
+      color: #7a3268;
+    }
+
+    .highlight {
+      font-weight: 700;
+      color: #d83786;
+    }
+
+    .label-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      background: #ffe4f4;
+      border: 1px solid #ffbcdc;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #b33476;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .label-dot {
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 50%;
+      background: #ff7ebc;
+    }
+
+    /* ---------- Progress + nav + timeline layout ---------- */
+    #progress-section {
+      margin-top: 1.3rem;
+    }
+
+    .progress-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: #ffd7ec;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 2px solid #ffb3dd;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff8ec7, #ff63b0, #ff9dd7);
+      transition: width 0.25s ease-out;
+    }
+
+    .page-indicator {
+      text-align: left;
+      color: #d25397;
+      margin-top: 0.45rem;
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+
+    /* Timeline down the left side – now larger for readability */
+    .phase-timeline {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 0.95rem;
-      border: 1px solid rgba(0,0,0,0.05);
-      user-select: none;
-    }
-    .cell.blank { background: transparent; border: none; }
-    .cell.free { background: #c9f0d4; color: #2f7d4f; cursor: pointer; }
-    .cell.half { background: #ffe0b3; color: #99601a; cursor: pointer; }
-    .cell.full { background: #ffc1c1; color: #9c3a3a; }
-    .cell.none, .cell.past { background: #ececec; color: #b3b3b3; }
-    .cell.free:hover, .cell.half:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 3px 7px rgba(255, 132, 195, 0.45);
-    }
-    .cell .count {
-      font-size: 0.62rem;
-      font-weight: 600;
-      opacity: 0.85;
-      margin-top: 0.1rem;
+      gap: 0.55rem;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+      -webkit-overflow-scrolling: touch;
+      min-width: 190px;
+      max-width: 100%;
+      padding-top: 0.2rem;
+      border-right: 1px dashed #ffb8de;
+      padding-right: 0.9rem;
     }
 
-    .hint {
-      text-align: center;
-      font-size: 0.85rem;
-      color: #a34e88;
-      margin-top: 0.9rem;
-      font-style: italic;
-    }
-
-    /* day view */
-    .back-btn {
-      border: none;
-      background: linear-gradient(135deg, #ffdbe9, #ffc3df);
-      color: #b13675;
-      font-weight: 800;
-      padding: 0.5rem 1.1rem;
+    .phase-pill {
+      flex: 0 0 auto;
+      padding: 0.4rem 0.85rem;
       border-radius: 999px;
-      cursor: pointer;
+      border: 1px solid #ffb8de;
+      background: #fff7fd;
       font-size: 0.9rem;
-      margin-bottom: 1rem;
+      line-height: 1.4;
+      color: #8a2c60;
+      cursor: pointer;
+      transition:
+        background 0.18s ease,
+        color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.08s ease;
+      text-align: left;
+      white-space: normal;     /* allow wrapping */
+      word-break: keep-all;
     }
-    .day-title {
+
+    .phase-pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(255, 132, 195, 0.45);
+    }
+
+    .phase-pill-active {
+      background: linear-gradient(90deg, #ff8ec7, #ff63b0);
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 6px rgba(220, 84, 151, 0.6);
+    }
+
+    .phase-pill-index {
       font-weight: 800;
-      color: #b7357b;
-      font-size: 1.15rem;
-      margin-bottom: 0.9rem;
+      margin-right: 0.35rem;
     }
-    .times {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+
+    .phase-pill-label {
+      font-weight: 600;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      margin-top: 1.7rem;
       gap: 0.6rem;
     }
-    .time-btn {
-      border: none;
-      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
-      color: #fff;
-      font-weight: 800;
-      font-size: 1rem;
-      padding: 0.7rem 0.5rem;
-      border-radius: 14px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.4);
-    }
-    .time-btn:hover { transform: translateY(-1px); }
-    .time-btn.taken {
-      background: #ececec;
-      color: #b3b3b3;
-      cursor: default;
-      box-shadow: none;
-      text-decoration: line-through;
+
+    #next-btn {
+      margin-left: auto; /* keeps Next aligned right on all pages */
     }
 
-    /* confirm + result */
-    .confirm-box, .result-box {
-      background: #fff5fb;
-      border: 1px solid #ffd1ec;
-      border-radius: 16px;
-      padding: 1.2rem;
-      text-align: center;
-      line-height: 1.6;
-    }
-    .confirm-box .big, .result-box .big {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #d83786;
-      margin: 0.3rem 0 0.9rem;
-    }
     .heart-button {
       border: none;
-      padding: 0.7rem 1.5rem;
+      padding: 0.8rem 1.7rem;
       border-radius: 999px;
       cursor: pointer;
-      font-weight: 800;
       font-size: 0.98rem;
+      font-weight: 800;
       background: linear-gradient(135deg, #ff9acb, #ff6fb6);
-      color: #fff;
+      color: white;
       box-shadow: 0 5px 12px rgba(255, 105, 180, 0.45);
-      margin: 0.3rem;
+      position: relative;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+      width: 100%;
+      max-width: 220px;
     }
+
+    .heart-button::before {
+      content: "❤";
+      margin-right: 0.4rem;
+      font-size: 1.05rem;
+    }
+
+    .heart-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 16px rgba(255, 105, 180, 0.6);
+      filter: brightness(1.05);
+    }
+
+    .heart-button:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 3px 8px rgba(255, 105, 180, 0.4);
+    }
+
+    .heart-button:disabled {
+      background: linear-gradient(135deg, #f7c8e1, #f3b4d8);
+      cursor: default;
+      box-shadow: none;
+      filter: grayscale(0.1);
+    }
+
     .heart-button.secondary {
       background: linear-gradient(135deg, #ffdbe9, #ffc3df);
       color: #b13675;
+      box-shadow: 0 3px 8px rgba(255, 182, 216, 0.7);
     }
-    .reference {
+
+    .heart-button.secondary::before {
+      content: "⟵";
+      font-size: 1rem;
+    }
+
+    .heart-button.primary::before {
+      content: "⟶";
+      font-size: 1rem;
+      margin-right: 0.3rem;
+    }
+
+    .heart-button.primary.done::before {
+      content: "✔";
+    }
+
+    /* ---------- Diagram styling for “What You’ll Do” ---------- */
+    .diagram-wrapper {
+      margin-top: 1rem;
+      padding-top: 0.8rem;
+      border-top: 1px dashed #ffbcd7;
+    }
+
+    .diagram-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #c43780;
+      margin-bottom: 0.5rem;
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .step-card {
+      background: #fff8fd;
+      border-radius: 14px;
+      border: 1px solid #ffd0ec;
+      padding: 0.6rem 0.7rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.9rem;
+    }
+
+    .step-circle {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #fff 0, #ffe0f3 40%, #ffb5dd 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #b02f73;
+      box-shadow: 0 2px 5px rgba(255, 143, 202, 0.55);
+      font-size: 0.9rem;
+    }
+
+    .step-text {
+      line-height: 1.4;
+    }
+
+    .step-label {
+      font-weight: 700;
+      color: #aa2f6c;
+      display: block;
+    }
+
+    .step-sub {
+      font-size: 0.83rem;
+      color: #7a3268;
+    }
+
+    /* ---------- Mini practice animation ---------- */
+    .practice-wrapper {
+      margin-top: 1.1rem;
+      padding: 0.75rem 0.8rem 0.85rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fff7fd, #ffeef9);
+      border: 1px solid #ffd4ec;
+    }
+
+    .practice-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .practice-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #b7357b;
+    }
+
+    .practice-play-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: linear-gradient(90deg, #ff8ec7, #ff5eae);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(212, 80, 150, 0.6);
+      transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease,
+        opacity 0.15s ease;
+    }
+
+    .practice-play-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 7px rgba(212, 80, 150, 0.7);
+    }
+
+    .practice-play-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(212, 80, 150, 0.45);
+    }
+
+    .practice-play-label {
+      letter-spacing: 0.01em;
+    }
+
+    .practice-viewport {
+      position: relative;
+      margin-top: 0.35rem;
+      border-radius: 14px;
+      background: radial-gradient(circle at 50% 0%, #ffffff 0, #ffeefe 48%, #ffd8f0 100%);
+      border: 1px solid #ffd0ec;
+      padding: 0.65rem 0.9rem 0.8rem;
+      height: 250px;
+      overflow: hidden;
+    }
+
+    .practice-table {
+      position: absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 10px;
+      height: 7px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #f4c2e4, #e09bce);
+      box-shadow: 0 -2px 6px rgba(195, 88, 151, 0.55) inset;
+    }
+
+    .practice-markers {
+      position: absolute;
+      left: 9%;
+      top: 20px;
+      bottom: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .marker {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: #9a3f7a;
+    }
+
+    .marker-line {
+      width: 14px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffa2d1, #ff6eb4);
+    }
+
+    .marker-label {
+      opacity: 0.9;
+    }
+
+    .practice-device {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      width: 84px;
+      height: 42px;
+      transform: translate(-50%, 0);
+    }
+
+    .device-core {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      width: 52px;
+      height: 24px;
+      transform: translateX(-50%);
+      border-radius: 10px;
+      background: linear-gradient(180deg, #8dd6ff, #5bb5f5);
+      box-shadow: 0 3px 6px rgba(87, 140, 217, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .device-sensor {
+      width: 60%;
+      height: 60%;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #e7f4ff, #c8ddff);
+    }
+
+    .device-grip {
+      position: absolute;
+      width: 14px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #a4e58b, #5bbf54);
+      box-shadow: 0 2px 4px rgba(74, 149, 75, 0.5);
+      top: 6px;
+    }
+
+    .device-grip-left {
+      left: 0;
+    }
+
+    .device-grip-right {
+      right: 0;
+    }
+
+    .device-housing {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 46px;
+      height: 16px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 50% 0%, #f7b1ff, #d27ae5);
+      box-shadow: 0 3px 6px rgba(163, 72, 191, 0.65);
+    }
+
+    @keyframes practiceSequence {
+      0%   { transform: translate(-50%, 0); }
+      10%  { transform: translate(-50%, -20px); }
+      25%  { transform: translate(-50%, -20px); }
+      45%  { transform: translate(-50%, -185px); }
+      60%  { transform: translate(-50%, -185px); }
+      80%  { transform: translate(-50%, -20px); }
+      90%  { transform: translate(-50%, -20px); }
+      100% { transform: translate(-50%, 0); }
+    }
+
+    .practice-viewport.is-playing .practice-device {
+      animation: practiceSequence 11s ease-in-out forwards;
+    }
+
+    .practice-caption {
+      margin-top: 0.55rem;
+      font-size: 0.85rem;
+      color: #8b3c79;
+      line-height: 1.5;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      border: 0;
+    }
+
+    /* ---------- FAQ screen styling ---------- */
+    .faq-wrapper {
+      margin-top: 0.4rem;
+    }
+
+    .faq-intro {
+      font-size: 0.96rem;
+      color: #7b3b70;
+      margin-bottom: 0.9rem;
+    }
+
+    .faq-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: 1rem;
+    }
+
+    .faq-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .faq-button {
+      border-radius: 999px;
+      border: 1px solid #ffb9dd;
+      background: #fff6fc;
+      padding: 0.45rem 0.85rem;
+      text-align: left;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: #983067;
+      transition: background 0.12s ease, box-shadow 0.12s ease, transform 0.08s ease;
+    }
+
+    .faq-button span.emoji {
+      font-size: 1.1rem;
+    }
+
+    .faq-button:hover {
+      background: #ffe6f5;
+      box-shadow: 0 3px 8px rgba(255, 140, 201, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .faq-button.active {
+      background: linear-gradient(135deg, #ffb4dc, #ff8ac6);
+      color: #5e1342;
+      box-shadow: 0 4px 10px rgba(255, 104, 181, 0.5);
+      font-weight: 700;
+    }
+
+    .faq-answer {
+      background: #fff8fd;
+      border-radius: 18px;
+      border: 1px solid #ffd2ec;
+      padding: 0.9rem 1rem;
+      font-size: 0.94rem;
+      color: #6c2b5a;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .faq-answer-title {
+      font-weight: 700;
+      color: #c43880;
+      margin-bottom: 0.1rem;
+    }
+
+    .faq-email-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 0.95rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9ace, #ff6ab6);
+      color: #fff;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-top: 0.4rem;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.5);
+    }
+
+    .faq-email-btn::before {
+      content: "✉";
+      font-size: 1rem;
+    }
+
+    .faq-note {
       font-size: 0.82rem;
       color: #8a3b6f;
-      margin-top: 0.8rem;
-      word-break: break-all;
+      margin-top: 0.3rem;
     }
-    .reminder {
-      background: #fff7fd;
-      border-radius: 12px;
-      border: 1px dashed #ffbcd7;
-      padding: 0.7rem 0.9rem;
-      font-size: 0.88rem;
-      color: #7a3268;
-      margin-top: 1rem;
-      text-align: left;
+
+    .faq-tagline {
+      font-size: 0.82rem;
+      color: #a24e84;
+      margin-top: 0.2rem;
+      font-style: italic;
     }
-    .hidden { display: none; }
+
+    /* -- Avoid 2-col table using a mid-size media query --*/
+    @media (max-width: 868px) {
+      .diagram-grid {
+        display: grid;
+        grid-template-columns: repeat(1, minmax(150px, 1fr));
+        gap: 0.75rem;
+      }
+    }
+
+    /* ---------- Small screen tweaks ---------- */
+    @media (max-width: 640px) {
+      body {
+        padding: 1.2rem;
+        align-items: flex-start;
+      }
+      .page-wrapper {
+        padding: 1.6rem 1.4rem 1.4rem;
+      }
+      .header-row {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+      }
+      .mascot {
+        align-self: center;
+      }
+      h1 {
+        font-size: 1.4rem;
+      }
+
+      .page-body {
+        flex-direction: column;
+      }
+
+      .phase-timeline {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        max-height: none;
+        overflow-x: auto;
+        overflow-y: visible;
+        border-right: none;
+        border-bottom: 1px dashed #ffb8de;
+        padding-right: 0;
+        padding-bottom: 0.6rem;
+        min-width: 0;
+      }
+
+      .nav {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+      #next-btn {
+        margin-left: 0; /* full-width buttons on mobile */
+      }
+      .heart-button {
+        max-width: none;
+      }
+      .faq-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .practice-viewport {
+        height: 250px;
+        padding: 0.6rem 0.65rem 0.7rem;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="mascot">🐱🐟</div>
-    <h1>Book your session</h1>
-    <div class="subtitle">Pick a day, then a time that suits you. Sessions last about 30 minutes 🎀</div>
+  <!-- clouds & sparkles in the background (now static) -->
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="sparkle s1"></div>
+  <div class="sparkle s2"></div>
+  <div class="sparkle s3"></div>
+  <div class="sparkle s4"></div>
 
-    <div id="notice" class="notice hidden"></div>
+  <div class="page-wrapper">
+    <div class="header-row">
+      <div>
+        <h1 id="page-title">Welcome</h1>
+        <div class="subtitle" id="page-subtitle">Let’s get ready for the pinch grip task 🌸</div>
+      </div>
 
-    <!-- month view -->
-    <div id="month-view" class="hidden">
-      <div class="month-nav">
-        <button id="prev-month" class="nav-btn" aria-label="Previous month">‹</button>
-        <div id="month-label" class="month-label"></div>
-        <button id="next-month" class="nav-btn" aria-label="Next month">›</button>
+      <div class="mascot">
+        <div class="mascot-inner">
+          <!-- Cat paws holding a blue fish; no cat face shown -->
+          <div class="mascot-fish">
+            <div class="fish-body">
+              <div class="fish-eye"></div>
+              <div class="fish-gill"></div>
+            </div>
+            <div class="fish-tail"></div>
+          </div>
+
+          <div class="cat-paw cat-paw-left">
+            <div class="paw-pad-main">
+              <div class="paw-toes">
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="cat-paw cat-paw-right">
+            <div class="paw-pad-main">
+              <div class="paw-toes">
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+                <div class="paw-toe"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mascot-badge" id="mascot-badge">Info Sheet</div>
       </div>
-      <div class="legend">
-        <span><span class="swatch free"></span> Free</span>
-        <span><span class="swatch half"></span> Filling up</span>
-        <span><span class="swatch full"></span> Full</span>
-        <span><span class="swatch none"></span> No slots</span>
-      </div>
-      <div class="weekdays" id="weekdays"></div>
-      <div class="grid" id="grid"></div>
-      <div id="hint" class="hint hidden"></div>
     </div>
 
-    <!-- day view -->
-    <div id="day-view" class="hidden">
-      <button id="back-btn" class="back-btn">‹ Back to calendar</button>
-      <div id="day-title" class="day-title"></div>
-      <div id="times" class="times"></div>
-    </div>
+    <div class="page-body">
+      <div id="phase-timeline" class="phase-timeline"></div>
 
-    <!-- result view -->
-    <div id="result-view" class="hidden"></div>
+      <div class="page-main">
+        <div class="mascot-speech" id="mascot-speech"></div>
+
+        <div id="page-content"></div>
+
+        <div id="progress-section">
+          <div class="progress-main">
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="page-indicator" class="page-indicator"></div>
+          </div>
+        </div>
+
+        <div class="nav" id="nav">
+          <button id="back-btn" class="heart-button secondary">Back</button>
+          <button id="next-btn" class="heart-button primary">Next</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+    /* ---- Pages ---- */
+    const pages = [
+      {
+        phaseLabel: "Welcome",
+        title: "Welcome ✨",
+        subtitle: "Participant Information Sheet",
+        speech: "Thank you for your interest in taking part! I’ll explain everything step by step so you know exactly what to do 🌸",
+        html: `
+          <p>In this experiment, we’re interested in how you control <span class="highlight">precision pinch grip</span>
+          with your thumb and index finger.</p>
 
-    const SUPABASE_URL = "https://rkxzshpwipcgyjvcofid.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJreHpzaHB3aXBjZ3lqdmNvZmlkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5MjM0MTksImV4cCI6MjA5NjQ5OTQxOX0.Y8oxEqpn7HLDGb2OASPOeiPY5p80jRbVK3QEwGOtMNA";
-  // don't expose the SECRET key here !!
+          <p>You’ll hold a small device between your fingers, lift it to different heights, and keep it steady while we
+          quietly record how your hands respond to changes in the device's weight.</p>
 
-    const TZ = "Europe/London";
+          <p>There are no “right” or “wrong” answers here. We’re just interested in how <em>your</em> hands naturally respond 💖</p>
 
-    // friendly messages for each reason the booking function can return
-    const REASONS = {
-      missing_code: "We couldn't read your participant code. Please go back to the questionnaire and use the link at the end of it.",
-      missing_group: "Your booking link was missing some details. Please go back to the questionnaire and use the link at the end of it, or email the research team if this keeps happening.",
-      no_such_slot: "That slot could no longer be found. Please choose another time.",
-      slot_not_open: "That slot isn't available any more. Please choose another time.",
-      too_soon: "That time is now less than 24 hours away, so it can't be booked. Please pick a time a little further ahead.",
-      slot_taken: "Sorry, someone just took that slot. Please choose another time.",
-      race_lost: "Sorry, someone just took that slot. Please choose another time.",
-      already_booked: "Our records show you already have a booking. If you need to change it, please email the research team."
+          <div class="tip-box">
+            🌼 <strong>Take your time reading.</strong> You can always ask the researcher if something doesn’t make sense.
+          </div>
+
+          <p style="margin-top:1.2rem;"><strong>Who is running this study?</strong></p>
+
+          <p>This study is being carried out by a small research team at the University of Birmingham.</p>
+
+          <ul>
+            <li><strong>Primary Contact:</strong> Leaf - Student Researcher</li>
+            <li><strong>Supporting Researchers:</strong> Clark - Research Assistant</li>
+            <li><strong>Supervision:</strong> Max and Diar - Supervisor & Post Doc</li>
+          </ul>
+
+          <p>If you have questions or concerns later about your participation or your data, you can email:</p>
+          <ul>
+            <li><strong>m.diluca@bham.ac.uk</strong> (Max - Supervisor)</li>
+          </ul>
+
+          <div class="tip-box">
+            If something feels unclear or worrying at any time,
+            you can always ask the researcher in the room or contact us by email.
+          </div>
+        `
+      },
+      {
+        phaseLabel: "Device",
+        title: "Meet the Device 🎀",
+        subtitle: "The tiny pinch-grip tool you’ll be holding",
+        speech: "This device is more sensitive than it looks! It can feel how hard you pinch and how much you move 💫",
+        html: `
+          <p>You’ll be using a <span class="highlight">small device pinched between your thumb and index finger</span>.
+          Inside it, there are sensors that can feel both <strong>grip force</strong> and <strong>movement</strong>:</p>
+
+          <ul>
+            <li><strong>Grip force</strong> = how hard you pinch the device 💪</li>
+            <li><strong>Movement</strong> = how the device moves as you lift and hold it ↻</li>
+          </ul>
+
+          <p>When you pinch and hold the device, our sensors measure that change.</p>
+
+          <p>Later on, the computer turns those measurements into numbers so we can look at things like:</p>
+
+          <ul>
+            <li><strong>Average grip force</strong> (your overall pinch)</li>
+            <li><strong>Peak force</strong> (the strongest you pinched)</li>
+            <li><strong>Reaction Time</strong> (how quickly you automatically responded)</li>
+            <li><strong>Movement Time</strong> (how quickly you tightened your pinch)</li>
+          </ul>
+
+          <div class="tip-box">
+            🧠 You don’t need to remember any of this — just hold and move the device as instructed. We’ll handle the rest!
+          </div>
+        `
+      },
+      {
+        phaseLabel: "Pinch & lift",
+        title: "What You’ll Do 🌟",
+        subtitle: "The basic pinch and lift sequence",
+        speech: "Here’s the little routine you’ll repeat. I’ll break it down into tiny steps so it’s super clear!",
+        html: `
+          <p>Each trial is a <span class="highlight">pinch-and-hold-up activity (PHUA)</span>.
+          You’ll repeat the same basic sequence with the device:</p>
+
+          <div class="practice-wrapper">
+            <div class="practice-header">
+              <div class="practice-title">Mini practice animation</div>
+              <button
+                type="button"
+                class="practice-play-btn"
+                data-practice-play
+              >
+                <span aria-hidden="true">▶</span>
+                <span class="practice-play-label">Play</span>
+                <span class="visually-hidden">Play practice animation of the lift</span>
+              </button>
+            </div>
+
+            <div
+              class="practice-viewport"
+              data-practice-viewport
+              aria-label="Animated example of lifting the device between the 10 cm and 25 cm markers"
+            >
+              <div class="practice-markers">
+                <div class="marker marker-25">
+                  <span class="marker-line"></span>
+                  <span class="marker-label">25&nbsp;cm</span>
+                </div>
+                <div class="marker marker-10">
+                  <span class="marker-line"></span>
+                  <span class="marker-label">10&nbsp;cm</span>
+                </div>
+              </div>
+
+              <div class="practice-device">
+                <div class="device-grip device-grip-left"></div>
+                <div class="device-grip device-grip-right"></div>
+
+                <div class="device-core">
+                  <div class="device-sensor"></div>
+                </div>
+
+                <div class="device-housing"></div>
+              </div>
+
+              <div class="practice-table"></div>
+            </div>
+
+            <p class="practice-caption">
+              This is the device held between your thumb and index finger.
+              The green blocks are the sensors you press on, the blue aspects are the housing, and the purple is the small weight inside.
+              It starts on the table, lifts up to the 10&nbsp;cm marker, then to 25&nbsp;cm,
+              and finally comes gently back down.
+            </p>
+          </div>
+
+          <div class="tip-box">
+            🌸 Try to keep your movements <strong>steady</strong> and <strong>controlled</strong>, without rushing.<br/>
+            We’re looking at how your grip changes over time, not how fast you can finish.
+          </div>
+        `
+      },
+      {
+        phaseLabel: "Catch phase",
+        title: "The Surprise “Catch” Phase 🎣",
+        subtitle: "When a weight in the device suddenly drops",
+        speech: "Sometimes the device drops a weight inside, but all you need to do is grip tighter when this happens so the device doesn't fall out of your fingers! 🐰",
+        html: `
+          <p>In some of the trials, there will be a <span class="highlight">“catch” phase</span>.</p>
+
+          <p>During these special trials, the device experiences a sudden extra <strong>downward, pulling force</strong>.</p>
+
+          <p><strong>Your job:</strong> When you feel this happen, simply <strong>tighten your grip a bit</strong> so the device
+          doesn’t slip from your fingers.</p>
+
+          <div class="tip-box">
+            💡 There’s no need to “react perfectly” — we’re interested in your natural response:
+            how your grip <strong>hesitates, anticipates, or adjusts</strong> when the weight changes.
+          </div>
+        `
+      },
+      {
+        phaseLabel: "Conditions",
+        title: "Different Conditions 🍓",
+        subtitle: "Dominant, Non-dominant & Curtain",
+        speech: "We’ll repeat the task in a few different ways to see how your grip changes across conditions 🎀",
+        html: `
+          <p>You’ll do the pinch-and-hold task under several conditions:</p>
+
+          <p>
+            <span class="label-chip">
+              <span class="label-dot"></span> Dominant hand
+            </span>
+            <span class="label-chip">
+              <span class="label-dot"></span> Non-dominant hand
+            </span>
+            <span class="label-chip">
+              <span class="label-dot"></span> Curtain
+            </span>
+          </p>
+
+          <ul>
+            <li><strong>Dominant hand:</strong> The hand you normally use for writing or most tasks.</li>
+            <li><strong>Non-dominant hand:</strong> The opposite hand doing the same lift-and-hold sequence.</li>
+            <li><strong>Curtain:</strong> Your vision of the device is blocked by holding your arm through a curtain.</li>
+          </ul>
+
+          <p>In the vision blocked condition, you’ll still know how high to lift the device:</p>
+
+          <ul>
+            <li>There will be <strong>little feather markers</strong> indicating the different heights.</li>
+            <li>You’ll lift until the device reaches each feather level, then hold it there.</li>
+          </ul>
+
+          <div class="tip-box">
+            🕊️ Just listen to the instructions and aim for the feather markers — you don’t have to be perfect.
+          </div>
+        `
+      },
+      {
+        phaseLabel: "Before start",
+        title: "Before We Start 🧼",
+        subtitle: "What happens next",
+        speech: "Almost ready! Just a few little prep steps you need to be aware of 💖",
+        html: `
+          <p>Before the actual task begins, there are a few steps:</p>
+
+          <ul>
+            <li>You’ll complete a <strong>questionnaire</strong>.</li>
+            <li>You’ll then be scheduled for the experiment session.</li>
+            <li>When you arrive, you’ll be asked to <strong>wash your hands with a natural soap provided</strong>
+              to remove grease (some soaps can leave a residue).</li>
+            <li>You’ll dry your hands with the <strong>kitchen roll provided</strong>.</li>
+            <li>You’ll then sit with one hand hovering over the table in a cubicle, facing the device.</li>
+            <li>Your other hand will rest in your lap.</li>
+            <li>You don’t need to “perform” in a special way — your normal, natural behaviour is exactly what we want.</li>
+          </ul>
+
+          <p>The researcher will sit on the other side of the table to guide you, answer questions, and run the trials.</p>
+
+          <div class="tip-box">
+            🌼 If at any point your hands feel uncomfortable or tired, please tell the researcher —
+            we can pause or adjust as needed.
+          </div>
+        `
+      },
+      {
+        phaseLabel: "During & after",
+        title: "During & After the Experiment 💫",
+        subtitle: "What we’re measuring & what happens after",
+        speech: "While you focus on the task, we quietly record how your grip changes over time. You don’t have to think about the data at all 🐰",
+        html: `
+          <p>In between conditions, you’ll <span class="highlight">take a few minute breaks</span>.</p>
+          <p>Inside the device are <strong>force and motion sensors</strong> that measure:</p>
+          <ul>
+            <li>How hard you <strong>press</strong> on the device (grip force)</li>
+            <li>How the device <strong>moves</strong> as you lift and hold it (motion)</li>
+          </ul>
+          <p>Afterwards, your data is anonymously analysed and stored for up to 5 years.</p>
+          <p><span class="highlight">If at any point you’d like your data to be deleted</span>, email
+            axc103@student.bham.ac.uk, Max's email, or Diar's email.</p>
+        `
+      },
+      {
+        phaseLabel: "Finished",
+        title: "Finished!",
+        subtitle: "FAQ On The Next Page",
+        speech: "You made it through all the instructions! Check our FAQ on the next page or email us ✨",
+        html: `
+          <p>That’s everything you need to know for now. Thank you so much for your interest in our project 🌸</p>
+
+          <p>If you have <strong>any questions at all</strong>, now is a great time to ask the researcher.</p>
+
+          <div class="tip-box">
+            🐰 When you’ve finished reading, please fill out the questionnaire. Afterwards, you will be able to book for the experiment 💫
+          </div>
+        `
+      }
+    ];
+
+    const faqData = {
+      "what-happens-next": {
+        title: "What happens after I finish the task?",
+        body: `
+          <p>Once you’ve finished all the trials, the researcher will:</p>
+          <ul>
+            <li>Check that you’re feeling okay and answer any last questions.</li>
+            <li>Save your data using a participant ID (not your name).</li>
+            <li>Explain anything you’d like to know more about.</li>
+          </ul>
+          <p>You can also decide at any point later that you’d like your data to be deleted.</p>
+        `
+      },
+      "can-i-take-breaks": {
+        title: "Can I take a break or stop?",
+        body: `
+          <p>Yes, absolutely.</p>
+          <ul>
+            <li>You can ask for a break at any time during the session.</li>
+            <li>If your hand feels tired, uncomfortable, or you feel unwell, just tell the researcher.</li>
+            <li>You can stop taking part altogether at any time, without giving a reason.</li>
+          </ul>
+        `
+      },
+      "is-this-safe": {
+        title: "Is the task safe and okay for my hands?",
+        body: `
+          <p>The task uses gentle pinch movements that most people do in daily life (like picking up small objects).</p>
+          <ul>
+            <li>The researcher will check that you’re comfortable before starting.</li>
+            <li>If anything feels painful or worrying, you should say so straight away.</li>
+            <li>We can pause, change position, or end the session if needed.</li>
+          </ul>
+        `
+      },
+      "what-about-my-data": {
+        title: "What happens to my data?",
+        body: `
+          <p>Your data is stored under a participant ID, not your name.</p>
+          <ul>
+            <li>It may be analysed and used for research reports or publications.</li>
+            <li>Only the research team will have access to the raw data.</li>
+            <li>Your data can be stored for up to 5 years.</li>
+          </ul>
+          <p>If you later decide you want your data deleted, you can email the research team and give your participant ID if you have it.</p>
+        `
+      },
+      "need-more-help": {
+        title: "Need more help or want to contact someone?",
+        body: `
+          <p>If you still have questions or worries, you can contact the research team by email.</p>
+          <p>
+            <a class="faq-email-btn" href="mailto:axc103@student.bham.ac.uk?subject=Question%20about%20pinch%20grip%20study">
+              Email the research team
+            </a>
+          </p>
+          <p class="faq-note">
+            You may also be given additional email addresses (for example, Max or Diar) on your information sheet,
+            and you can use those as well if you prefer.
+          </p>
+          <p class="faq-tagline">
+            💌 It’s always okay to ask questions — before, during, or after the experiment.
+          </p>
+        `
+      }
     };
 
-    // ---- small helpers ----
-    const $ = (id) => document.getElementById(id);
-    const pad = (n) => String(n).padStart(2, "0");
+    let currentPageIndex = 0;
+    let inFaqMode = false;
+    let hasAutoPlayedPractice = false;
 
-    function showOnly(id) {
-      ["notice", "month-view", "day-view", "result-view"].forEach((v) => {
-        $(v).classList.toggle("hidden", v !== id);
-      });
+    const pageTitleEl = document.getElementById("page-title");
+    const pageSubtitleEl = document.getElementById("page-subtitle");
+    const mascotSpeechEl = document.getElementById("mascot-speech");
+    const pageContentEl = document.getElementById("page-content");
+    const backBtn = document.getElementById("back-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const pageIndicatorEl = document.getElementById("page-indicator");
+    const progressFillEl = document.getElementById("progress-fill");
+    const progressSectionEl = document.getElementById("progress-section");
+    const navEl = document.getElementById("nav");
+    const mascotBadgeEl = document.getElementById("mascot-badge");
+    const phaseTimelineEl = document.getElementById("phase-timeline");
+
+    function isMobile() {
+      return window.matchMedia && window.matchMedia("(max-width: 640px)").matches;
     }
 
-    function showNotice(html) {
-      $("notice").innerHTML = html;
-      showOnly("notice");
-    }
-
-    // YYYY-MM-DD for a Date, in London civil terms
-    function londonDateKey(date) {
-      return new Intl.DateTimeFormat("en-CA", { timeZone: TZ }).format(date);
-    }
-    // HH:MM for a Date, in London time
-    function londonTime(date) {
-      return new Intl.DateTimeFormat("en-GB", {
-        timeZone: TZ, hour: "2-digit", minute: "2-digit"
-      }).format(date);
-    }
-
-    async function api(path, opts = {}) {
-      const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
-        ...opts,
-        headers: {
-          apikey: SUPABASE_ANON_KEY,
-          Authorization: "Bearer " + SUPABASE_ANON_KEY,
-          ...(opts.headers || {})
-        }
-      });
-      if (!res.ok) throw new Error("request failed: " + res.status);
-      return res.json();
-    }
-
-    // ---- state ----
-    const state = {
-      code: null,
-      group: null,     // group_a / group_b, carried from the Qualtrics redirect
-      days: {},        // dateKey -> { total, booked, bookable }
-      slots: [],       // [{ slot_id, starts_at, duration_minutes, is_booked, is_bookable }]
-      year: 0,
-      month: 0,        // 0-indexed
-      todayKey: ""
-    };
-
-    // ---- load everything ----
-    async function load() {
-      const [days, slots] = await Promise.all([
-        api("day_availability?select=*"),
-        api("slot_availability?select=*&order=starts_at")
-      ]);
-
-      state.days = {};
-      for (const d of days) {
-        state.days[d.day] = {
-          total: Number(d.total_slots),
-          booked: Number(d.booked_slots),
-          bookable: Number(d.bookable_slots)
-        };
-      }
-      state.slots = slots;
-      renderMonth();
-    }
-
-    // ---- month grid ----
-    function dayClass(key, counts) {
-      if (key < state.todayKey) return { cls: "past", clickable: false };
-      if (!counts || counts.total === 0) return { cls: "none", clickable: false };
-      if (counts.booked >= counts.total) return { cls: "full", clickable: false };
-      if (counts.bookable === 0) return { cls: "none", clickable: false };
-      if (counts.booked * 2 >= counts.total) return { cls: "half", clickable: true };
-      return { cls: "free", clickable: true };
-    }
-
-    function renderMonth() {
-      showOnly("month-view");
-
-      const monthNames = ["January","February","March","April","May","June",
-        "July","August","September","October","November","December"];
-      $("month-label").textContent = monthNames[state.month] + " " + state.year;
-
-      // weekday headers, week starts Monday
-      const wd = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-      $("weekdays").innerHTML = wd.map((d) => '<div class="weekday">' + d + "</div>").join("");
-
-      const grid = $("grid");
-      grid.innerHTML = "";
-
-      const firstWeekday = (new Date(state.year, state.month, 1).getDay() + 6) % 7; // Mon=0
-      const daysInMonth = new Date(state.year, state.month + 1, 0).getDate();
-
-      for (let i = 0; i < firstWeekday; i++) {
-        const blank = document.createElement("div");
-        blank.className = "cell blank";
-        grid.appendChild(blank);
-      }
-
-      let anyClickable = false;
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const key = state.year + "-" + pad(state.month + 1) + "-" + pad(day);
-        const counts = state.days[key];
-        const { cls, clickable } = dayClass(key, counts);
-
-        const cell = document.createElement("div");
-        cell.className = "cell " + cls;
-        cell.innerHTML = '<div>' + day + "</div>";
-
-        if (counts && counts.total > 0 && cls !== "past") {
-          const free = counts.total - counts.booked;
-          cell.innerHTML += '<div class="count">' + free + " free</div>";
-        }
-
-        if (clickable) {
-          anyClickable = true;
-          cell.addEventListener("click", () => renderDay(key));
-        }
-
-        grid.appendChild(cell);
-      }
-
-      // restrict the back arrow so people can't page into the past
-      const firstOfThisMonth = state.year + "-" + pad(state.month + 1) + "-01";
-      const todayMonthStart = state.todayKey.slice(0, 7) + "-01";
-      $("prev-month").disabled = firstOfThisMonth <= todayMonthStart;
-
-      const hint = $("hint");
-      if (!anyClickable) {
-        hint.textContent = "No times to book this month. Try the arrow to look ahead.";
-        hint.classList.remove("hidden");
-      } else {
-        hint.classList.add("hidden");
+    function scrollToTopIfMobile() {
+      if (isMobile()) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     }
 
-    function changeMonth(delta) {
-      state.month += delta;
-      if (state.month < 0) { state.month = 11; state.year--; }
-      if (state.month > 11) { state.month = 0; state.year++; }
-      renderMonth();
-    }
+    /* ---- Practice animation helpers ---- */
+    function setupPracticeAnimationIfPresent() {
+      const viewport = pageContentEl.querySelector("[data-practice-viewport]");
+      const playButton = pageContentEl.querySelector("[data-practice-play]");
 
-    // ---- day view ----
-    function renderDay(dayKey) {
-      showOnly("day-view");
+      if (!viewport || !playButton) return;
 
-      const daySlots = state.slots.filter((s) => londonDateKey(new Date(s.starts_at)) === dayKey);
+      function playSequence() {
+        viewport.classList.remove("is-playing");
+        void viewport.offsetWidth; // restart animation
+        viewport.classList.add("is-playing");
+      }
 
-      const pretty = new Intl.DateTimeFormat("en-GB", {
-        timeZone: TZ, weekday: "long", day: "numeric", month: "long"
-      }).format(new Date(dayKey + "T12:00:00Z"));
-      $("day-title").textContent = pretty;
+      if (!playButton.dataset.bound) {
+        playButton.dataset.bound = "true";
+        playButton.addEventListener("click", playSequence);
+      }
 
-      const times = $("times");
-      times.innerHTML = "";
-
-      daySlots.sort((a, b) => new Date(a.starts_at) - new Date(b.starts_at));
-
-      for (const slot of daySlots) {
-        const btn = document.createElement("button");
-        btn.textContent = londonTime(new Date(slot.starts_at));
-        if (slot.is_bookable) {
-          btn.className = "time-btn";
-          btn.addEventListener("click", () => confirmSlot(slot, dayKey));
-        } else {
-          btn.className = "time-btn taken";
-          btn.disabled = true;
-        }
-        times.appendChild(btn);
+      if (!hasAutoPlayedPractice) {
+        hasAutoPlayedPractice = true;
+        setTimeout(playSequence, 500);
       }
     }
 
-    // ---- confirm step ----
-    function confirmSlot(slot, dayKey) {
-      showOnly("result-view");
-      const when = new Intl.DateTimeFormat("en-GB", {
-        timeZone: TZ, weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
-      }).format(new Date(slot.starts_at));
-
-      $("result-view").innerHTML = `
-        <div class="confirm-box">
-          <div>Book this 30-minute session?</div>
-          <div class="big">${when}</div>
-          <button class="heart-button" id="do-book">Yes, book it</button>
-          <button class="heart-button secondary" id="cancel-book">Pick another time</button>
-        </div>`;
-
-      $("cancel-book").addEventListener("click", () => renderDay(dayKey));
-      $("do-book").addEventListener("click", () => doBook(slot, when));
+    /* ---- Phase timeline helpers ---- */
+    function normalisePhaseLabel(label) {
+      if (!label) return "";
+      return label.replace(/\s+/g, " ").trim();
     }
 
-    // ---- the actual write, via book_slot ----
-    async function doBook(slot, when) {
-      $("do-book").disabled = true;
-      $("do-book").textContent = "Booking...";
+    function createPhaseTimeline() {
+      if (!phaseTimelineEl) return;
+      phaseTimelineEl.innerHTML = "";
 
-      try {
-        const result = await api("rpc/book_slot", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ p_code: state.code, p_slot_id: slot.slot_id, p_group_flag: state.group })
+      pages.forEach((page, index) => {
+        const pill = document.createElement("button");
+        pill.type = "button";
+        pill.className = "phase-pill";
+        pill.setAttribute("data-phase-index", index);
+
+        const label = normalisePhaseLabel(page.phaseLabel || page.title);
+
+        pill.innerHTML = `
+          <span class="phase-pill-index">${index + 1}.</span>
+          <span class="phase-pill-label">${label}</span>
+        `;
+
+        pill.addEventListener("click", () => {
+          if (inFaqMode) return;
+          currentPageIndex = index;
+          renderPage(currentPageIndex);
+          scrollToTopIfMobile();
         });
 
-        if (result && result.ok) {
-          showResult(when);
-        } else {
-          const reason = (result && result.reason) || "unknown";
-          showProblem(REASONS[reason] || "Something went wrong booking that slot. Please try another time.");
-        }
-      } catch (e) {
-        showProblem("We couldn't reach the booking system just now. Please check your connection and try again.");
-      }
-    }
-
-    function showResult(when) {
-      showOnly("result-view");
-      $("result-view").innerHTML = `
-        <div class="result-box">
-          <div style="font-size:2rem;">🎉</div>
-          <div>You're booked in for</div>
-          <div class="big">${when}</div>
-          <div class="reminder">
-            🌸 Before your session, please re-read the
-            <a href="https://antikitten.github.io/grip-participant-info/"
-               target="_blank" rel="noopener"
-               style="color:#d83786; font-weight:700; text-decoration:underline;">participant information sheet</a>.
-            If you need to change or cancel, email the research team and quote your reference below.
-          </div>
-          <div class="reference">Reference: ${state.code}</div>
-        </div>`;
-    }
-
-    function showProblem(msg) {
-      showOnly("result-view");
-      $("result-view").innerHTML = `
-        <div class="result-box">
-          <div style="font-size:1.6rem;">🌼</div>
-          <div>${msg}</div>
-          <button class="heart-button" id="try-again">Back to the calendar</button>
-        </div>`;
-      $("try-again").addEventListener("click", () => load());
-    }
-
-    // ---- start up ----
-    function init() {
-      // setup check
-      if (SUPABASE_URL.includes("PASTE_") || SUPABASE_ANON_KEY.includes("PASTE_")) {
-        showNotice("<strong>Almost there.</strong> This page still needs your Supabase project URL and anon key filling in near the top of the file.");
-        return;
-      }
-
-      // the participant code arrives in the URL from the Qualtrics redirect
-      const params = new URLSearchParams(window.location.search);
-      const code = (params.get("code") || "").trim();
-      if (!code) {
-        showNotice("<strong>One step first.</strong> Please complete the questionnaire before booking. Use the booking link shown at the end of it, which carries your details across so you don't have to type anything here.");
-        return;
-      }
-      state.code = code;
-
-      // the group flag arrives the same way and is required, so a booking
-      // can never be created that the experiment runner would later refuse
-      const group = (params.get("group_flag") || "").trim();
-      if (group !== "group_a" && group !== "group_b") {
-        showNotice("<strong>One step first.</strong> Your booking link seems to be incomplete. Please use the booking link shown at the end of the questionnaire, which carries your details across. If that link keeps bringing you back here, please email the research team.");
-        return;
-      }
-      state.group = group;
-
-      state.todayKey = londonDateKey(new Date());
-      state.year = parseInt(state.todayKey.slice(0, 4), 10);
-      state.month = parseInt(state.todayKey.slice(5, 7), 10) - 1;
-
-      $("prev-month").addEventListener("click", () => changeMonth(-1));
-      $("next-month").addEventListener("click", () => changeMonth(1));
-      $("back-btn").addEventListener("click", renderMonth);
-
-      load().catch(() => {
-        showNotice("We couldn't load the available times. If you've just set up the page, double-check the Supabase URL and key near the top of the file.");
+        phaseTimelineEl.appendChild(pill);
       });
     }
 
-    init();
+    function updatePhaseTimelineActive(index) {
+      if (!phaseTimelineEl) return;
+      const pills = phaseTimelineEl.querySelectorAll(".phase-pill");
+      pills.forEach((pill, i) => {
+        pill.classList.toggle("phase-pill-active", i === index);
+      });
+
+      const active = phaseTimelineEl.querySelector(".phase-pill-active");
+      if (active && isMobile() && typeof active.scrollIntoView === "function") {
+        active.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest"
+        });
+      }
+    }
+
+    /* ---- Render main info pages ---- */
+    function renderPage(index) {
+      const page = pages[index];
+      if (!page) return;
+      inFaqMode = false;
+
+      pageTitleEl.textContent = page.title;
+      pageSubtitleEl.textContent = page.subtitle || "";
+      mascotSpeechEl.innerHTML = page.speech || "";
+      pageContentEl.innerHTML = page.html;
+
+      setupPracticeAnimationIfPresent();
+
+      // Show timeline & progress section (in case coming back from FAQ)
+      phaseTimelineEl.style.display = "flex";
+      progressSectionEl.style.display = "block";
+      navEl.style.display = "flex";
+      mascotBadgeEl.textContent = "Info Sheet";
+
+      // Back button visibility
+      if (index === 0) {
+        backBtn.style.display = "none";
+      } else {
+        backBtn.style.display = "inline-block";
+      }
+
+      // Last page = change Next button text
+      if (index === pages.length - 1) {
+        nextBtn.textContent = "All done!";
+        nextBtn.classList.add("done");
+        nextBtn.classList.add("primary");
+      } else {
+        nextBtn.textContent = "Next";
+        nextBtn.classList.remove("done");
+      }
+
+      pageIndicatorEl.textContent = `Page ${index + 1} of ${pages.length}`;
+      const progress = ((index + 1) / pages.length) * 100;
+      progressFillEl.style.width = progress + "%";
+
+      updatePhaseTimelineActive(index);
+    }
+
+    /* ---- FAQ screen ---- */
+    function enterFaqMode() {
+      inFaqMode = true;
+
+      pageTitleEl.textContent = "All done! 🎉";
+      pageSubtitleEl.textContent = "Chat with your little experiment helper";
+      mascotSpeechEl.innerHTML = "Great job making it through all the instructions! Tap a question below and I’ll help explain things 🐰";
+
+      mascotBadgeEl.textContent = "Help & FAQ";
+
+      progressSectionEl.style.display = "none";
+      navEl.style.display = "none";
+      phaseTimelineEl.style.display = "none";
+
+      pageContentEl.innerHTML = `
+        <div class="faq-wrapper">
+          <p class="faq-intro">
+            This page is just for you to double-check anything you’re still curious about. You can’t “do it wrong” here —
+            it’s simply a friendly FAQ.
+          </p>
+          <div class="faq-layout">
+            <div class="faq-buttons">
+              <button class="faq-button" data-faq-key="what-happens-next">
+                <span class="emoji">➡️</span>
+                <span>What happens after I finish?</span>
+              </button>
+              <button class="faq-button" data-faq-key="can-i-take-breaks">
+                <span class="emoji">⏸️</span>
+                <span>Can I take breaks or stop?</span>
+              </button>
+              <button class="faq-button" data-faq-key="is-this-safe">
+                <span class="emoji">🖐️</span>
+                <span>Is this safe for my hands?</span>
+              </button>
+              <button class="faq-button" data-faq-key="what-about-my-data">
+                <span class="emoji">🔐</span>
+                <span>What happens to my data?</span>
+              </button>
+              <button class="faq-button" data-faq-key="need-more-help">
+                <span class="emoji">💌</span>
+                <span>Need more help?</span>
+              </button>
+            </div>
+            <div class="faq-answer" id="faq-answer">
+              <div class="faq-answer-title">Tap a question on the left to see the answer ✨</div>
+              <p>If anything still doesn’t make sense, it’s always okay to ask the researcher in the room.</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const faqButtons = pageContentEl.querySelectorAll(".faq-button");
+      const answerEl = document.getElementById("faq-answer");
+
+      function showFaq(key, button) {
+        const data = faqData[key];
+        if (!data) return;
+        faqButtons.forEach(btn => btn.classList.remove("active"));
+        if (button) button.classList.add("active");
+        answerEl.innerHTML = `
+          <div class="faq-answer-title">${data.title}</div>
+          ${data.body}
+        `;
+      }
+
+      faqButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-faq-key");
+          showFaq(key, btn);
+        });
+      });
+
+      if (faqButtons[0]) {
+        showFaq(faqButtons[0].getAttribute("data-faq-key"), faqButtons[0]);
+      }
+
+      scrollToTopIfMobile();
+    }
+
+    /* ---- Navigation ---- */
+    backBtn.addEventListener("click", () => {
+      if (inFaqMode) return;
+      if (currentPageIndex > 0) {
+        currentPageIndex--;
+        renderPage(currentPageIndex);
+      }
+    });
+
+    nextBtn.addEventListener("click", () => {
+      if (inFaqMode) return;
+      if (currentPageIndex < pages.length - 1) {
+        currentPageIndex++;
+        renderPage(currentPageIndex);
+        scrollToTopIfMobile();
+      } else {
+        enterFaqMode();
+      }
+    });
+
+    /* ---- Init ---- */
+    createPhaseTimeline();
+    renderPage(currentPageIndex);
   </script>
 </body>
 </html>
