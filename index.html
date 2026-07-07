@@ -872,6 +872,35 @@
       font-style: italic;
     }
 
+    /* ---------- Return-to-questionnaire button (FAQ screen) ---------- */
+    .faq-return-wrap {
+      text-align: center;
+      margin-bottom: 1.1rem;
+    }
+
+    .faq-return-btn {
+      display: inline-block;
+      padding: 0.85rem 1.9rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 1rem;
+      box-shadow: 0 5px 12px rgba(255, 105, 180, 0.45);
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .faq-return-btn::before {
+      content: "⟵ ";
+    }
+
+    .faq-return-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 16px rgba(255, 105, 180, 0.6);
+      filter: brightness(1.05);
+    }
+
     /* -- Avoid 2-col table using a mid-size media query --*/
     @media (max-width: 868px) {
       .diagram-grid {
@@ -1252,7 +1281,7 @@
           </ul>
           <p>Afterwards, your data is anonymously analysed and stored for up to 5 years.</p>
           <p><span class="highlight">If at any point you’d like your data to be deleted</span>, email
-            axc103@student.bham.ac.uk, Max's email, or Diar's email.</p>
+            axc103@student.bham.ac.uk or m.diluca@bham.ac.uk.</p>
         `
       },
       {
@@ -1500,6 +1529,9 @@
 
       pageContentEl.innerHTML = `
         <div class="faq-wrapper">
+          <div class="faq-return-wrap">
+            <a class="faq-return-btn" href="https://bhampsychology.eu.qualtrics.com/jfe/form/SV_24991J5prVD6MuO">Back to the questionnaire</a>
+          </div>
           <p class="faq-intro">
             This page is just for you to double-check anything you’re still curious about. You can’t “do it wrong” here —
             it’s simply a friendly FAQ.
