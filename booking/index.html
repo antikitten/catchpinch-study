@@ -308,6 +308,7 @@
     // friendly messages for each reason the booking function can return
     const REASONS = {
       missing_code: "We couldn't read your participant code. Please go back to the questionnaire and use the link at the end of it.",
+      missing_group: "Your booking link was missing some details. Please go back to the questionnaire and use the link at the end of it, or email the research team if this keeps happening.",
       no_such_slot: "That slot could no longer be found. Please choose another time.",
       slot_not_open: "That slot isn't available any more. Please choose another time.",
       too_soon: "That time is now less than 24 hours away, so it can't be booked. Please pick a time a little further ahead.",
@@ -358,6 +359,7 @@
     // ---- state ----
     const state = {
       code: null,
+      group: null,     // group_a / group_b, carried from the Qualtrics redirect
       days: {},        // dateKey -> { total, booked, bookable }
       slots: [],       // [{ slot_id, starts_at, duration_minutes, is_booked, is_bookable }]
       year: 0,
@@ -520,7 +522,7 @@
         const result = await api("rpc/book_slot", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ p_code: state.code, p_slot_id: slot.slot_id })
+          body: JSON.stringify({ p_code: state.code, p_slot_id: slot.slot_id, p_group_flag: state.group })
         });
 
         if (result && result.ok) {
@@ -576,6 +578,15 @@
         return;
       }
       state.code = code;
+
+      // the group flag arrives the same way and is required, so a booking
+      // can never be created that the experiment runner would later refuse
+      const group = (params.get("group_flag") || "").trim();
+      if (group !== "group_a" && group !== "group_b") {
+        showNotice("<strong>One step first.</strong> Your booking link seems to be incomplete. Please use the booking link shown at the end of the questionnaire, which carries your details across. If that link keeps bringing you back here, please email the research team.");
+        return;
+      }
+      state.group = group;
 
       state.todayKey = londonDateKey(new Date());
       state.year = parseInt(state.todayKey.slice(0, 4), 10);
