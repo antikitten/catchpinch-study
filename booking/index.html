@@ -264,7 +264,7 @@
   <div class="card">
     <div class="mascot">🐱🐟</div>
     <h1>Book your session</h1>
-    <div class="subtitle">Pick a day, then a time that suits you 🎀</div>
+    <div class="subtitle">Pick a day, then a time that suits you. Sessions last about 30 minutes 🎀</div>
 
     <div id="notice" class="notice hidden"></div>
 
@@ -503,7 +503,7 @@
 
       $("result-view").innerHTML = `
         <div class="confirm-box">
-          <div>Book this session?</div>
+          <div>Book this 30-minute session?</div>
           <div class="big">${when}</div>
           <button class="heart-button" id="do-book">Yes, book it</button>
           <button class="heart-button secondary" id="cancel-book">Pick another time</button>
@@ -544,7 +544,10 @@
           <div>You're booked in for</div>
           <div class="big">${when}</div>
           <div class="reminder">
-            🌸 Please re-read the participant information sheet before your session.
+            🌸 Before your session, please re-read the
+            <a href="https://antikitten.github.io/grip-participant-info/"
+               target="_blank" rel="noopener"
+               style="color:#d83786; font-weight:700; text-decoration:underline;">participant information sheet</a>.
             If you need to change or cancel, email the research team and quote your reference below.
           </div>
           <div class="reference">Reference: ${state.code}</div>
