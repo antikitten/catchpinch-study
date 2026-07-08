@@ -257,6 +257,53 @@
       margin-top: 1rem;
       text-align: left;
     }
+    /* confirmation screen: add-to-calendar, location, map link */
+    .cal-btn {
+      border: none;
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.95rem;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(255, 105, 180, 0.45);
+      margin: 0.2rem 0 0.9rem;
+    }
+    .cal-btn::before { content: "📅 "; }
+
+    .where-box {
+      background: #fff7fd;
+      border: 1px solid #ffd1ec;
+      border-radius: 14px;
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-size: 0.9rem;
+      color: #6c2b5a;
+      line-height: 1.6;
+      margin-top: 0.6rem;
+    }
+    .where-title {
+      font-weight: 800;
+      color: #c43880;
+      margin-bottom: 0.3rem;
+    }
+    .where-box p { margin: 0.45rem 0; }
+
+    .map-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #ff9acb, #ff6fb6);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+      box-shadow: 0 3px 8px rgba(255, 105, 180, 0.4);
+    }
+    .map-link::before { content: "📍 "; }
+
     .hidden { display: none; }
   </style>
 </head>
@@ -526,7 +573,7 @@
         });
 
         if (result && result.ok) {
-          showResult(when);
+          showResult(slot, when);
         } else {
           const reason = (result && result.reason) || "unknown";
           showProblem(REASONS[reason] || "Something went wrong booking that slot. Please try another time.");
@@ -536,22 +583,86 @@
       }
     }
 
-    function showResult(when) {
+    function showResult(slot, when) {
       showOnly("result-view");
       $("result-view").innerHTML = `
         <div class="result-box">
           <div style="font-size:2rem;">🎉</div>
           <div>You're booked in for</div>
           <div class="big">${when}</div>
+
+          <button class="cal-btn" id="add-cal">Add to calendar</button>
+
+          <div class="where-box">
+            <div class="where-title">Where to go</div>
+            <p>Your session is on the <strong>4th floor of 52 Pritchatts Road</strong>, University of Birmingham, Edgbaston, Birmingham B15 2TT.</p>
+            <p>When you arrive, step inside and look for the café on the ground floor. With the café in front of you, take the passageway on your left, then turn left again through the open doors, and you will find yourself in front of the lifts. Take one up to the 4th floor, where a researcher will be waiting to greet you at your slot time.</p>
+            <p>If you find yourself there a little early, do feel free to email <strong>axc103@student.bham.ac.uk</strong>. If someone is free they will come and meet you, or send another researcher, and settle you somewhere comfortable to wait. And if anything changes, whether you need to cancel, rearrange, or you are simply running a little late, a quick note to that same address is all we need.</p>
+            <p>Getting here: the building is a short walk from University station and the nearest bus stop, and there is a multi-storey car park (B15 2SA) directly outside.</p>
+            <a class="map-link" href="https://www.google.com/maps?q=52+Pritchatts+Road+University+of+Birmingham+B15+2TT" target="_blank" rel="noopener">View on map</a>
+          </div>
+
           <div class="reminder">
             🌸 Before your session, please re-read the
-            <a href="https://antikitten.github.io/grip-participant-info/"
+            <a href="https://antikitten.github.io/catchpinch-study/"
                target="_blank" rel="noopener"
                style="color:#d83786; font-weight:700; text-decoration:underline;">participant information sheet</a>.
-            If you need to change or cancel, email the research team and quote your reference below.
           </div>
           <div class="reference">Reference: ${state.code}</div>
         </div>`;
+
+      $("add-cal").addEventListener("click", () => downloadIcs(slot));
+    }
+
+    // ---- calendar file for the booked slot ----
+    // iCalendar UTC timestamp: YYYYMMDDTHHMMSSZ
+    function icsStamp(date) {
+      return date.getUTCFullYear()
+        + pad(date.getUTCMonth() + 1)
+        + pad(date.getUTCDate())
+        + "T"
+        + pad(date.getUTCHours())
+        + pad(date.getUTCMinutes())
+        + pad(date.getUTCSeconds())
+        + "Z";
+    }
+
+    // escape a text value per the iCalendar spec
+    function icsEscape(text) {
+      return text.replace(/\\/g, "\\\\")
+        .replace(/;/g, "\\;")
+        .replace(/,/g, "\\,")
+        .replace(/\n/g, "\\n");
+    }
+
+    function downloadIcs(slot) {
+      const start = new Date(slot.starts_at);
+      const end = new Date(start.getTime() + 30 * 60 * 1000); // participant session is about 30 minutes
+      const ics = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Catchpinch//Booking//EN",
+        "BEGIN:VEVENT",
+        "UID:" + state.code + "-" + slot.slot_id + "@catchpinch",
+        "DTSTAMP:" + icsStamp(new Date()),
+        "DTSTART:" + icsStamp(start),
+        "DTEND:" + icsStamp(end),
+        "SUMMARY:" + icsEscape("Pinch grip study session"),
+        "LOCATION:" + icsEscape("52 Pritchatts Road, University of Birmingham, B15 2TT"),
+        "DESCRIPTION:" + icsEscape("Meet by the lifts on the 4th floor. Questions: axc103@student.bham.ac.uk"),
+        "END:VEVENT",
+        "END:VCALENDAR",
+      ].join("\r\n");
+
+      const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pinch-grip-session.ics";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     function showProblem(msg) {
