@@ -1,0 +1,73 @@
+<!--
+  catchpinch booking-reminder email.
+
+  Fill in these placeholders (by hand for a manual send, or let remind_unbooked.py
+  fill them if you automate it):
+    {first_name}    the participant's name
+    {booking_link}  their booking URL
+    {image_url}     a PUBLIC url for the header image (email can't use a file on
+                    your computer). Host email_header.png on your GitHub Pages
+                    site and paste the url here. Delete the image row if unused.
+
+  Custom fonts (Chewy / Baloo 2) don't work in email, so the text falls back to
+  a friendly web-safe font; the cute lettering lives in the header image instead.
+  Styling is inline because that's what email clients honour.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FBF2E2;margin:0;padding:24px 0;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:92%;background-color:#FFFDF8;border:3px solid #55285F;border-radius:20px;overflow:hidden;">
+
+        <!-- header image (delete this row if you don't host an image) -->
+        <tr>
+          <td align="center" style="padding:26px 0 6px 0;">
+            <img src="{image_url}" width="190" alt="the catchpinch device" style="display:block;width:190px;max-width:55%;height:auto;border:0;" />
+          </td>
+        </tr>
+
+        <!-- heading (the plain device image has no text, so the cute line lives here) -->
+        <tr>
+          <td align="center" style="padding:4px 34px 0 34px;font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;">
+            <div style="color:#55285F;font-size:27px;font-weight:bold;">You're almost done!</div>
+            <div style="height:6px;width:150px;background-color:#FB6A5B;border-radius:3px;margin:12px auto 4px auto;"></div>
+          </td>
+        </tr>
+
+        <!-- body -->
+        <tr>
+          <td style="padding:26px 34px 4px 34px;font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#2A1F33;font-size:16px;line-height:1.6;">
+            <p style="margin:0 0 14px 0;">Hi {first_name},</p>
+            <p style="margin:0 0 14px 0;">You finished filling in the questionnaire! There's just one thing left to do: picking a time to pop in and have a go with our gripping, lifting, &amp; lowering our device.</p>
+            <p style="margin:0 0 14px 0;">And if you tried to book earlier and hit a snag, our apologies, that's now been fixed, so the link below will work smoothly. <!--FIXED_NOTE--></p>
+            <p style="margin:0 0 14px 0;">If the concern is about the weather, the room is entirely air-conditioned.</p>
+            <p style="margin:0 0 4px 0;">It takes about <strong>30 minutes</strong>, it's completely relaxed, and there's nothing to prepare, just bring yourself.</p>
+          </td>
+        </tr>
+
+        <!-- button -->
+        <tr>
+          <td align="center" style="padding:20px 34px 10px 34px;">
+            <a href="{booking_link}" style="background-color:#FB6A5B;color:#FFFFFF;text-decoration:none;font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;font-size:18px;font-weight:bold;padding:16px 40px;border-radius:28px;display:inline-block;">Grab my slot &rarr;</a>
+          </td>
+        </tr>
+
+        <!-- sign-off -->
+        <tr>
+          <td style="padding:8px 34px 4px 34px;font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#2A1F33;font-size:16px;line-height:1.6;">
+            <p style="margin:0 0 6px 0;">Hope to see you soon!</p>
+            <p style="margin:0 0 16px 0;color:#55285F;font-weight:bold;">Leaf</p>
+            <p style="margin:0 0 18px 0;font-size:14px;color:#7E4EA6;">Any questions at all? Just reply to this email, or reach me at axc103@student.bham.ac.uk.</p>
+          </td>
+        </tr>
+
+        <!-- footer -->
+        <tr>
+          <td style="padding:16px 34px 26px 34px;border-top:1px solid #D2BCEE;font-family:'Trebuchet MS','Segoe UI',Verdana,sans-serif;color:#7E4EA6;font-size:13px;">
+            catchpinch study &middot; University of Birmingham
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
