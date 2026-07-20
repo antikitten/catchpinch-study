@@ -672,6 +672,7 @@
           <div class="big">${when}</div>
 
           <button class="cal-btn" id="add-cal">Add to calendar</button>
+          ${revisitHtml()}
           ${whereBoxHtml()}
 
           <div class="reminder">
@@ -680,7 +681,6 @@
                target="_blank" rel="noopener"
                style="color:#d83786; font-weight:700; text-decoration:underline;">participant information sheet</a>.
           </div>
-          ${revisitHtml()}
           <div class="reference">Reference: ${state.code}</div>
         </div>`;
 
