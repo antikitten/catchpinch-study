@@ -1,1 +1,5 @@
 .idea/
+google_key.json
+.env.local
+emailed.txt
+catchpinch-research-*.json
