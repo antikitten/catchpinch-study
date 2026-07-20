@@ -49,20 +49,27 @@ CONFIG = {
     "booking_base": "https://antikitten.github.io/catchpinch-study/booking/",
 
     # Resend sender must be on a domain you've verified in Resend
-    "from_email": "catchpinch study <noreply@catchpinchresearch.com>",
+    "from_email": "catchpinch <noreply@FILL_ME_IN>",
     "reply_to": "axc103@student.bham.ac.uk",
     "subject": "You're almost in \u2013 book your catchpinch session",
 
     # public URL for the header image, or "" to leave it out of the email
     "image_url": "https://antikitten.github.io/catchpinch-study/device_rig.png",
 
-    # the "booking is now fixed" reassurance line. Leave True if there was a booking
-    # bug; set it to False if everything is working fine.
-    "site_fixed_note": False,
+    # the "booking is now fixed" reassurance line. Leave True for this first
+    # catch-up batch; set it to False and re-run for later reminders.
+    "site_fixed_note": True,
 
     # file that remembers who has already been emailed, so nobody is reminded
     # twice. Written only on a real --send. Keep it out of git (it has emails).
     "already_emailed_file": "emailed.txt",
+
+    # Qualtrics marks even a rapid click-through as "finished". This floor skips
+    # --csv responses that finished in fewer than this many seconds (the genuine
+    # median is ~12 min, so speed-runs stand out). Raise it to be stricter, set
+    # 0 to turn it off. Only the --csv path can use this (the sheet carries no
+    # duration column).
+    "min_completion_seconds": 120,
 }
 
 
@@ -113,6 +120,7 @@ def csv_completed(csv_path):
     if code_i is None:
         raise RuntimeError("No ParticipantCode column in the export.")
     fin_i = next((i for i, h in enumerate(hdr) if h == "Finished"), None)
+    dur_i = next((i for i, h in enumerate(hdr) if h == "Duration (in seconds)"), None)
     email_i, best = None, 0                # email column = most @ addresses
     for i in range(len(hdr)):
         n = sum(1 for r in data if i < len(r) and "@" in str(r[i]))
@@ -121,16 +129,31 @@ def csv_completed(csv_path):
     if email_i is None:
         raise RuntimeError("No email column found (no @ addresses in the export).")
 
+    min_sec = int(CONFIG.get("min_completion_seconds", 0) or 0)
     out, seen = [], set()
+    too_fast = 0
     for r in data:
         if code_i >= len(r) or email_i >= len(r):
             continue
         code = str(r[code_i]).strip()
         email = str(r[email_i]).strip()
         finished = fin_i is None or str(r[fin_i]).strip().lower() in ("1", "true")
-        if code and "@" in email and finished and code not in seen:
-            seen.add(code)
-            out.append({"code": code, "email": email})
+        if not (code and "@" in email and finished and code not in seen):
+            continue
+        # Qualtrics marks a click-through as "finished"; skip a response that
+        # completed too fast to be a genuine sitting.
+        if min_sec > 0 and dur_i is not None and dur_i < len(r):
+            try:
+                if int(float(r[dur_i])) < min_sec:
+                    too_fast += 1
+                    continue
+            except ValueError:
+                pass
+        seen.add(code)
+        out.append({"code": code, "email": email})
+    if too_fast:
+        print(f"(skipped {too_fast} response(s) that finished in under "
+              f"{min_sec}s, too fast to be a genuine sitting)")
     return out
 
 
