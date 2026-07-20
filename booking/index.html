@@ -304,6 +304,28 @@
     }
     .map-link::before { content: "📍 "; }
 
+    /* report a problem */
+    .report-foot {
+      text-align: center;
+      margin-top: 1.3rem;
+    }
+    .report-link {
+      color: #a34e88;
+      font-size: 0.85rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .report-text {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #ff9fcb;
+      border-radius: 10px;
+      padding: 0.6rem;
+      font-family: inherit;
+      font-size: 0.95rem;
+      resize: vertical;
+    }
+
     .hidden { display: none; }
 
     /* mobile: keep the calendar inside the card on narrow screens */
@@ -356,6 +378,21 @@
 
     <!-- result view -->
     <div id="result-view" class="hidden"></div>
+
+    <!-- report a problem (always available, sits under whichever view is shown) -->
+    <div id="report-foot" class="report-foot">
+      <span id="report-link" class="report-link">Something not working? Report a problem</span>
+    </div>
+    <div id="report-form" class="hidden" style="margin-top:1rem;">
+      <div class="notice">
+        <div style="margin-bottom:0.5rem;"><strong>Tell us what went wrong</strong> and we'll look into it.</div>
+        <textarea id="report-text" class="report-text" rows="4" placeholder="Describe the problem here..."></textarea>
+        <div style="margin-top:0.6rem; text-align:right;">
+          <button class="heart-button secondary" id="report-cancel">Cancel</button>
+          <button class="heart-button" id="report-send">Send</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -403,6 +440,13 @@
         timeZone: TZ, hour: "2-digit", minute: "2-digit"
       }).format(date);
     }
+    // long, friendly "Monday 4 August, 09:00" for a slot instant
+    function londonWhen(startsAt) {
+      return new Intl.DateTimeFormat("en-GB", {
+        timeZone: TZ, weekday: "long", day: "numeric", month: "long",
+        hour: "2-digit", minute: "2-digit"
+      }).format(new Date(startsAt));
+    }
 
     async function api(path, opts = {}) {
       const res = await fetch(SUPABASE_URL + "/rest/v1/" + path, {
@@ -421,6 +465,7 @@
     const state = {
       code: null,
       group: null,     // group_a / group_b, carried from the Qualtrics redirect
+      booking: null,   // the participant's current booking, if they have one
       days: {},        // dateKey -> { total, booked, bookable }
       slots: [],       // [{ slot_id, starts_at, duration_minutes, is_booked, is_bookable }]
       year: 0,
@@ -558,9 +603,7 @@
     // ---- confirm step ----
     function confirmSlot(slot, dayKey) {
       showOnly("result-view");
-      const when = new Intl.DateTimeFormat("en-GB", {
-        timeZone: TZ, weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit"
-      }).format(new Date(slot.starts_at));
+      const when = londonWhen(slot.starts_at);
 
       $("result-view").innerHTML = `
         <div class="confirm-box">
@@ -587,6 +630,7 @@
         });
 
         if (result && result.ok) {
+          state.booking = { slot_id: slot.slot_id, starts_at: slot.starts_at };
           showResult(slot, when);
         } else {
           const reason = (result && result.reason) || "unknown";
@@ -595,6 +639,28 @@
       } catch (e) {
         showProblem("We couldn't reach the booking system just now. Please check your connection and try again.");
       }
+    }
+
+    // ---- the "where to go" block, shared by the confirmation and the
+    // returning-participant view ----
+    function whereBoxHtml() {
+      return `
+          <div class="where-box">
+            <div class="where-title">Where to go</div>
+            <p>Your session is on the <strong>4th floor of the Gisbert Kapp Building</strong>, University of Birmingham, Edgbaston, Birmingham B15 2TT.</p>
+            <p>When you arrive, step inside and head for <strong>Café 52</strong>. Go down the corridor and immediately turn left through the open double doors, where you will find the lifts. Take one up to the 4th floor, where a researcher will be waiting to greet you at your slot time.</p>
+            <p>If you find yourself there a little early, do feel free to email <strong>axc103@student.bham.ac.uk</strong>. If someone is free they will come and meet you, or send another researcher, and settle you somewhere comfortable to wait. And if anything changes, whether you need to cancel, rearrange, or you are simply running a little late, a quick note to that same address is all we need.</p>
+            <p>Getting here: the building is a short walk from University station and the nearest bus stop, and there is a multi-storey car park (B15 2SA) directly outside.</p>
+            <a class="map-link" href="https://www.google.com/maps?q=Gisbert+Kapp+Building+University+of+Birmingham+B15+2TT" target="_blank" rel="noopener">View on map</a>
+          </div>`;
+    }
+
+    // the note that tells people they can come back to this same link later
+    function revisitHtml() {
+      return `
+          <div class="reminder">
+            🔖 Forgotten your time later on, or need to change it? Just open this same booking link again any time. It will show you your slot, and let you reschedule or cancel from here.
+          </div>`;
     }
 
     function showResult(slot, when) {
@@ -606,15 +672,7 @@
           <div class="big">${when}</div>
 
           <button class="cal-btn" id="add-cal">Add to calendar</button>
-
-          <div class="where-box">
-            <div class="where-title">Where to go</div>
-            <p>Your session is on the <strong>4th floor of the Gisbert Kapp Building</strong>, University of Birmingham, Edgbaston, Birmingham B15 2TT.</p>
-            <p>When you arrive, step inside and head for <strong>Café 52</strong>. Go down the corridor and immediately turn left through the open double doors, where you will find the lifts. Take one up to the 4th floor, where a researcher will be waiting to greet you at your slot time.</p>
-            <p>If you find yourself there a little early, do feel free to email <strong>axc103@student.bham.ac.uk</strong>. If someone is free they will come and meet you, or send another researcher, and settle you somewhere comfortable to wait. And if anything changes, whether you need to cancel, rearrange, or you are simply running a little late, a quick note to that same address is all we need.</p>
-            <p>Getting here: the building is a short walk from University station and the nearest bus stop, and there is a multi-storey car park (B15 2SA) directly outside.</p>
-            <a class="map-link" href="https://www.google.com/maps?q=Gisbert+Kapp+Building+University+of+Birmingham+B15+2TT" target="_blank" rel="noopener">View on map</a>
-          </div>
+          ${whereBoxHtml()}
 
           <div class="reminder">
             🌸 Before your session, please re-read the
@@ -622,10 +680,104 @@
                target="_blank" rel="noopener"
                style="color:#d83786; font-weight:700; text-decoration:underline;">participant information sheet</a>.
           </div>
+          ${revisitHtml()}
           <div class="reference">Reference: ${state.code}</div>
         </div>`;
 
       $("add-cal").addEventListener("click", () => downloadIcs(slot));
+    }
+
+    // ---- returning participant: they already have a booking ----
+    function showBooked(mine) {
+      state.booking = { slot_id: mine.slot_id, starts_at: mine.starts_at };
+      showOnly("result-view");
+      const when = londonWhen(mine.starts_at);
+
+      $("result-view").innerHTML = `
+        <div class="result-box">
+          <div style="font-size:2rem;">🗓️</div>
+          <div>You're already booked in for</div>
+          <div class="big">${when}</div>
+
+          <button class="cal-btn" id="add-cal">Add to calendar</button>
+          ${whereBoxHtml()}
+
+          <div class="reminder">
+            🔖 You can reopen this same link any time to check this, reschedule, or cancel.
+          </div>
+
+          <div style="margin-top:1rem;">
+            <button class="heart-button secondary" id="reschedule-btn">Reschedule</button>
+            <button class="heart-button secondary" id="cancel-btn">Cancel booking</button>
+          </div>
+          <div class="reference">Reference: ${state.code}</div>
+        </div>`;
+
+      $("add-cal").addEventListener("click", () => downloadIcs(state.booking));
+      $("reschedule-btn").addEventListener("click", askReschedule);
+      $("cancel-btn").addEventListener("click", askCancel);
+    }
+
+    function askCancel() {
+      showOnly("result-view");
+      $("result-view").innerHTML = `
+        <div class="confirm-box">
+          <div>Cancel your booking? This frees the slot for someone else.</div>
+          <div class="big">${londonWhen(state.booking.starts_at)}</div>
+          <button class="heart-button" id="confirm-cancel">Yes, cancel it</button>
+          <button class="heart-button secondary" id="keep-booking">Keep my booking</button>
+        </div>`;
+      $("keep-booking").addEventListener("click", () => showBooked(state.booking));
+      $("confirm-cancel").addEventListener("click", () => doCancel(false));
+    }
+
+    function askReschedule() {
+      showOnly("result-view");
+      $("result-view").innerHTML = `
+        <div class="confirm-box">
+          <div>Reschedule? This releases your current time so you can pick a new one.</div>
+          <div class="big">${londonWhen(state.booking.starts_at)}</div>
+          <button class="heart-button" id="confirm-resched">Yes, pick a new time</button>
+          <button class="heart-button secondary" id="keep-booking2">Keep my booking</button>
+        </div>`;
+      $("keep-booking2").addEventListener("click", () => showBooked(state.booking));
+      $("confirm-resched").addEventListener("click", () => doCancel(true));
+    }
+
+    async function doCancel(isReschedule) {
+      showOnly("result-view");
+      $("result-view").innerHTML = `<div class="confirm-box"><div>One moment...</div></div>`;
+      try {
+        const res = await api("rpc/cancel_booking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ p_code: state.code })
+        });
+        if (!res || !res.ok) {
+          showProblem("We couldn't change that just now. Please try again, or email axc103@student.bham.ac.uk.");
+          return;
+        }
+        state.booking = null;
+        if (isReschedule) {
+          load().catch(() => showProblem("Your old time was released, but we couldn't load the calendar. Please refresh."));
+        } else {
+          showCancelled();
+        }
+      } catch (e) {
+        showProblem("We couldn't reach the booking system just now. Please try again.");
+      }
+    }
+
+    function showCancelled() {
+      showOnly("result-view");
+      $("result-view").innerHTML = `
+        <div class="result-box">
+          <div style="font-size:2rem;">🌸</div>
+          <div>Your booking has been cancelled, and the slot is free again.</div>
+          <button class="heart-button" id="rebook">Book a new time</button>
+        </div>`;
+      $("rebook").addEventListener("click", () => load().catch(() =>
+        showProblem("We couldn't load the calendar. Please refresh the page.")));
     }
 
     // ---- calendar file for the booked slot ----
@@ -687,7 +839,58 @@
           <div>${msg}</div>
           <button class="heart-button" id="try-again">Back to the calendar</button>
         </div>`;
-      $("try-again").addEventListener("click", () => load());
+      $("try-again").addEventListener("click", () => load().catch(() =>
+        showNotice("We couldn't load the available times. Please refresh the page.")));
+    }
+
+    // ---- report a problem ----
+    function setupReport() {
+      $("report-link").addEventListener("click", () => {
+        $("report-foot").classList.add("hidden");
+        $("report-form").classList.remove("hidden");
+      });
+      $("report-cancel").addEventListener("click", () => {
+        $("report-form").classList.add("hidden");
+        $("report-foot").classList.remove("hidden");
+      });
+      $("report-send").addEventListener("click", async () => {
+        const msg = $("report-text").value.trim();
+        if (!msg) return;
+        $("report-send").disabled = true;
+        $("report-send").textContent = "Sending...";
+        try {
+          await api("rpc/report_problem", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ p_code: state.code, p_message: msg })
+          });
+          $("report-form").innerHTML =
+            '<div class="notice">🌸 Thank you, your report has been sent. If it needs a reply, please also email axc103@student.bham.ac.uk.</div>';
+        } catch (e) {
+          $("report-form").innerHTML =
+            '<div class="notice">We couldn\'t send that just now. Please email axc103@student.bham.ac.uk instead.</div>';
+        }
+      });
+    }
+
+    // ---- returning participant check, then fall back to the calendar ----
+    async function checkExistingThenLoad() {
+      try {
+        const mine = await api("rpc/my_booking", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ p_code: state.code })
+        });
+        if (mine && mine.booked) {
+          showBooked(mine);
+          return;
+        }
+      } catch (e) {
+        // if the look-up fails, just show the calendar
+      }
+      load().catch(() => {
+        showNotice("We couldn't load the available times. If you've just set up the page, double-check the Supabase URL and key near the top of the file.");
+      });
     }
 
     // ---- start up ----
@@ -697,6 +900,9 @@
         showNotice("<strong>Almost there.</strong> This page still needs your Supabase project URL and anon key filling in near the top of the file.");
         return;
       }
+
+      // the report form is available on every screen, including the notices below
+      setupReport();
 
       // the participant code arrives in the URL from the Qualtrics redirect
       const params = new URLSearchParams(window.location.search);
@@ -724,9 +930,8 @@
       $("next-month").addEventListener("click", () => changeMonth(1));
       $("back-btn").addEventListener("click", renderMonth);
 
-      load().catch(() => {
-        showNotice("We couldn't load the available times. If you've just set up the page, double-check the Supabase URL and key near the top of the file.");
-      });
+      // if they already have a booking, show it; otherwise show the calendar
+      checkExistingThenLoad();
     }
 
     init();
