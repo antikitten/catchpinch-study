@@ -44,6 +44,7 @@ CONFIG = {
     # column headers in that sheet
     "email_col": "email",
     "code_col": "ParticipantCode",
+    "group_col": "group_flag",
 
     "supabase_url": "https://rkxzshpwipcgyjvcofid.supabase.co",
     "booking_base": "https://antikitten.github.io/catchpinch-study/booking/",
@@ -90,12 +91,20 @@ def sheet_completed():
 
     out = []
     seen = set()
+    no_group = 0
     for row in ws.get_all_records():           # list of dicts keyed by header
         code = str(row.get(CONFIG["code_col"], "")).strip()
         email = str(row.get(CONFIG["email_col"], "")).strip()
-        if code and email and code not in seen:
-            seen.add(code)
-            out.append({"code": code, "email": email})
+        group = str(row.get(CONFIG["group_col"], "")).strip()
+        if not (code and email and code not in seen):
+            continue
+        if group not in ("group_a", "group_b"):   # no flag -> booking link can't work
+            no_group += 1
+            continue
+        seen.add(code)
+        out.append({"code": code, "email": email, "group": group})
+    if no_group:
+        print(f"(skipped {no_group} sheet row(s) with no group_flag)")
     return out
 
 
@@ -121,6 +130,7 @@ def csv_completed(csv_path):
         raise RuntimeError("No ParticipantCode column in the export.")
     fin_i = next((i for i, h in enumerate(hdr) if h == "Finished"), None)
     dur_i = next((i for i, h in enumerate(hdr) if h == "Duration (in seconds)"), None)
+    grp_i = next((i for i, h in enumerate(hdr) if h == "group_flag"), None)
     email_i, best = None, 0                # email column = most @ addresses
     for i in range(len(hdr)):
         n = sum(1 for r in data if i < len(r) and "@" in str(r[i]))
@@ -132,11 +142,13 @@ def csv_completed(csv_path):
     min_sec = int(CONFIG.get("min_completion_seconds", 0) or 0)
     out, seen = [], set()
     too_fast = 0
+    no_group = 0
     for r in data:
         if code_i >= len(r) or email_i >= len(r):
             continue
         code = str(r[code_i]).strip()
         email = str(r[email_i]).strip()
+        group = str(r[grp_i]).strip() if grp_i is not None and grp_i < len(r) else ""
         finished = fin_i is None or str(r[fin_i]).strip().lower() in ("1", "true")
         if not (code and "@" in email and finished and code not in seen):
             continue
@@ -149,11 +161,18 @@ def csv_completed(csv_path):
                     continue
             except ValueError:
                 pass
+        # the booking link needs the group flag; without it the page can't book
+        if group not in ("group_a", "group_b"):
+            no_group += 1
+            continue
         seen.add(code)
-        out.append({"code": code, "email": email})
+        out.append({"code": code, "email": email, "group": group})
     if too_fast:
         print(f"(skipped {too_fast} response(s) that finished in under "
               f"{min_sec}s, too fast to be a genuine sitting)")
+    if no_group:
+        print(f"(skipped {no_group} response(s) with a blank group_flag, "
+              f"their booking link could not work)")
     return out
 
 
@@ -187,7 +206,7 @@ def booked_codes(service_key):
 
 def send_reminder(resend_key, person, template):
     """Send one reminder via Resend."""
-    link = f"{CONFIG['booking_base']}?code={person['code']}"
+    link = f"{CONFIG['booking_base']}?code={person['code']}&group_flag={person['group']}"
     html = (template
             .replace("{first_name}", "there")
             .replace("{booking_link}", link)
@@ -260,12 +279,16 @@ def main():
     from collections import defaultdict
     by_email = defaultdict(list)
     for p in completed:
-        by_email[p["email"]].append(p["code"])
+        by_email[p["email"]].append((p["code"], p["group"]))
     done = _already_emailed(here)
-    unbooked = [{"email": e, "code": codes[0]}
-                for e, codes in by_email.items()
-                if not any(c in booked for c in codes)
-                and e.lower() not in done]
+    unbooked = []
+    for e, pairs in by_email.items():
+        if any(code in booked for code, _ in pairs):
+            continue
+        if e.lower() in done:
+            continue
+        code0, group0 = pairs[0]
+        unbooked.append({"email": e, "code": code0, "group": group0})
     unbooked.sort(key=lambda p: p["email"])
     if args.limit is not None:
         unbooked = unbooked[:args.limit]
@@ -292,7 +315,7 @@ def main():
             except urllib.error.URLError as exc:
                 print(f"  FAILED -> {p['email']}: {exc}")
         else:
-            print(f"  would email <{p['email']}>  code {p['code']}")
+            print(f"  would email <{p['email']}>  code {p['code']}  ({p['group']})")
 
     print(f"\nSent {sent} reminder(s)." if args.send
           else "\nDry run: nothing sent. Add --send to send for real.")
